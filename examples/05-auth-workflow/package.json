@@ -1,0 +1,22 @@
+{
+  "name": "@a2a-ref/example-auth-workflow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@a2a-ref/auth": "workspace:*",
+    "@a2a-ref/client": "workspace:*",
+    "@a2a-ref/core": "workspace:*",
+    "@a2a-ref/server": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}
