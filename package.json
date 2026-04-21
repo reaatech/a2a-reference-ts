@@ -1,0 +1,47 @@
+{
+  "name": "a2a-reference-ts",
+  "version": "0.1.0",
+  "description": "Enterprise-grade TypeScript reference implementation of the A2A protocol with A2A↔MCP bridge",
+  "type": "module",
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build && changeset publish"
+  },
+  "keywords": [
+    "a2a",
+    "agent-to-agent",
+    "mcp",
+    "model-context-protocol",
+    "agents",
+    "ai",
+    "protocol"
+  ],
+  "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
+  "license": "MIT",
+  "packageManager": "pnpm@10.22.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reaatech/a2a-reference-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reaatech/a2a-reference-ts/issues"
+  },
+  "homepage": "https://github.com/reaatech/a2a-reference-ts#readme",
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@changesets/cli": "^2.28.1",
+    "@vitest/coverage-v8": "3.2.4",
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  }
+}
