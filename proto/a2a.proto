@@ -1,0 +1,459 @@
+// Agent-to-Agent (A2A) Protocol Specification
+// Source: https://github.com/google/A2A/blob/main/specification/a2a.proto
+// Normative reference for the TypeScript Zod schemas in packages/core.
+
+syntax = "proto3";
+package lf.a2a.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Lf.A2a.V1";
+option go_package = "google.golang.org/lf/a2a/v1";
+option java_multiple_files = true;
+option java_outer_classname = "A2A";
+option java_package = "com.google.lf.a2a.v1";
+
+service A2AService {
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {
+    option (google.api.http) = {
+      post: "/message:send"
+      body: "*"
+      additional_bindings: {
+        post: "/{tenant}/message:send"
+        body: "*"
+      }
+    };
+  }
+  rpc SendStreamingMessage(SendMessageRequest) returns (stream StreamResponse) {
+    option (google.api.http) = {
+      post: "/message:stream"
+      body: "*"
+      additional_bindings: {
+        post: "/{tenant}/message:stream"
+        body: "*"
+      }
+    };
+  }
+  rpc GetTask(GetTaskRequest) returns (Task) {
+    option (google.api.http) = {
+      get: "/tasks/{id=*}"
+      additional_bindings: {
+        get: "/{tenant}/tasks/{id=*}"
+      }
+    };
+    option (google.api.method_signature) = "id";
+  }
+  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse) {
+    option (google.api.http) = {
+      get: "/tasks"
+      additional_bindings: {
+        get: "/{tenant}/tasks"
+      }
+    };
+  }
+  rpc CancelTask(CancelTaskRequest) returns (Task) {
+    option (google.api.http) = {
+      post: "/tasks/{id=*}:cancel"
+      body: "*"
+      additional_bindings: {
+        post: "/{tenant}/tasks/{id=*}:cancel"
+        body: "*"
+      }
+    };
+  }
+  rpc SubscribeToTask(SubscribeToTaskRequest) returns (stream StreamResponse) {
+    option (google.api.http) = {
+      get: "/tasks/{id=*}:subscribe"
+      additional_bindings: {
+        get: "/{tenant}/tasks/{id=*}:subscribe"
+      }
+    };
+  }
+  rpc CreateTaskPushNotificationConfig(TaskPushNotificationConfig) returns (TaskPushNotificationConfig) {
+    option (google.api.http) = {
+      post: "/tasks/{task_id=*}/pushNotificationConfigs"
+      body: "*"
+      additional_bindings: {
+        post: "/{tenant}/tasks/{task_id=*}/pushNotificationConfigs"
+        body: "*"
+      }
+    };
+    option (google.api.method_signature) = "task_id,config";
+  }
+  rpc GetTaskPushNotificationConfig(GetTaskPushNotificationConfigRequest) returns (TaskPushNotificationConfig) {
+    option (google.api.http) = {
+      get: "/tasks/{task_id=*}/pushNotificationConfigs/{id=*}"
+      additional_bindings: {
+        get: "/{tenant}/tasks/{task_id=*}/pushNotificationConfigs/{id=*}"
+      }
+    };
+    option (google.api.method_signature) = "task_id,id";
+  }
+  rpc ListTaskPushNotificationConfigs(ListTaskPushNotificationConfigsRequest) returns (ListTaskPushNotificationConfigsResponse) {
+    option (google.api.http) = {
+      get: "/tasks/{task_id=*}/pushNotificationConfigs"
+      additional_bindings: {
+        get: "/{tenant}/tasks/{task_id=*}/pushNotificationConfigs"
+      }
+    };
+    option (google.api.method_signature) = "task_id";
+  }
+  rpc GetExtendedAgentCard(GetExtendedAgentCardRequest) returns (AgentCard) {
+    option (google.api.http) = {
+      get: "/extendedAgentCard"
+      additional_bindings: {
+        get: "/{tenant}/extendedAgentCard"
+      }
+    };
+  }
+  rpc DeleteTaskPushNotificationConfig(DeleteTaskPushNotificationConfigRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/tasks/{task_id=*}/pushNotificationConfigs/{id=*}"
+      additional_bindings: {
+        delete: "/{tenant}/tasks/{task_id=*}/pushNotificationConfigs/{id=*}"
+      }
+    };
+    option (google.api.method_signature) = "task_id,id";
+  }
+}
+
+message SendMessageConfiguration {
+  repeated string accepted_output_modes = 1;
+  TaskPushNotificationConfig task_push_notification_config = 2;
+  optional int32 history_length = 3;
+  bool return_immediately = 4;
+}
+
+message Task {
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+  string context_id = 2;
+  TaskStatus status = 3 [(google.api.field_behavior) = REQUIRED];
+  repeated Artifact artifacts = 4;
+  repeated Message history = 5;
+  google.protobuf.Struct metadata = 6;
+}
+
+enum TaskState {
+  TASK_STATE_UNSPECIFIED = 0;
+  TASK_STATE_SUBMITTED = 1;
+  TASK_STATE_WORKING = 2;
+  TASK_STATE_COMPLETED = 3;
+  TASK_STATE_FAILED = 4;
+  TASK_STATE_CANCELED = 5;
+  TASK_STATE_INPUT_REQUIRED = 6;
+  TASK_STATE_REJECTED = 7;
+  TASK_STATE_AUTH_REQUIRED = 8;
+}
+
+message TaskStatus {
+  TaskState state = 1 [(google.api.field_behavior) = REQUIRED];
+  Message message = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message Part {
+  oneof content {
+    string text = 1;
+    bytes raw = 2;
+    string url = 3;
+    google.protobuf.Value data = 4;
+  }
+  google.protobuf.Struct metadata = 5;
+  string filename = 6;
+  string media_type = 7;
+}
+
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  ROLE_USER = 1;
+  ROLE_AGENT = 2;
+}
+
+message Message {
+  string message_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string context_id = 2;
+  string task_id = 3;
+  Role role = 4 [(google.api.field_behavior) = REQUIRED];
+  repeated Part parts = 5 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Struct metadata = 6;
+  repeated string extensions = 7;
+  repeated string reference_task_ids = 8;
+}
+
+message Artifact {
+  string artifact_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 2;
+  string description = 3;
+  repeated Part parts = 4 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Struct metadata = 5;
+  repeated string extensions = 6;
+}
+
+message TaskStatusUpdateEvent {
+  string task_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string context_id = 2 [(google.api.field_behavior) = REQUIRED];
+  TaskStatus status = 3 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Struct metadata = 4;
+}
+
+message TaskArtifactUpdateEvent {
+  string task_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string context_id = 2 [(google.api.field_behavior) = REQUIRED];
+  Artifact artifact = 3 [(google.api.field_behavior) = REQUIRED];
+  bool append = 4;
+  bool last_chunk = 5;
+  google.protobuf.Struct metadata = 6;
+}
+
+message AuthenticationInfo {
+  string scheme = 1 [(google.api.field_behavior) = REQUIRED];
+  string credentials = 2;
+}
+
+message AgentInterface {
+  string url = 1 [(google.api.field_behavior) = REQUIRED];
+  string protocol_binding = 2 [(google.api.field_behavior) = REQUIRED];
+  string tenant = 3;
+  string protocol_version = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+message AgentCard {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string description = 2 [(google.api.field_behavior) = REQUIRED];
+  repeated AgentInterface supported_interfaces = 3 [(google.api.field_behavior) = REQUIRED];
+  AgentProvider provider = 4;
+  string version = 5 [(google.api.field_behavior) = REQUIRED];
+  optional string documentation_url = 6;
+  AgentCapabilities capabilities = 7 [(google.api.field_behavior) = REQUIRED];
+  map<string, SecurityScheme> security_schemes = 8;
+  repeated SecurityRequirement security_requirements = 9;
+  repeated string default_input_modes = 10 [(google.api.field_behavior) = REQUIRED];
+  repeated string default_output_modes = 11 [(google.api.field_behavior) = REQUIRED];
+  repeated AgentSkill skills = 12 [(google.api.field_behavior) = REQUIRED];
+  repeated AgentCardSignature signatures = 13;
+  optional string icon_url = 14;
+}
+
+message AgentProvider {
+  string url = 1 [(google.api.field_behavior) = REQUIRED];
+  string organization = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message AgentCapabilities {
+  optional bool streaming = 1;
+  optional bool push_notifications = 2;
+  repeated AgentExtension extensions = 3;
+  optional bool extended_agent_card = 4;
+}
+
+message AgentExtension {
+  string uri = 1;
+  string description = 2;
+  bool required = 3;
+  google.protobuf.Struct params = 4;
+}
+
+message AgentSkill {
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 2 [(google.api.field_behavior) = REQUIRED];
+  string description = 3 [(google.api.field_behavior) = REQUIRED];
+  repeated string tags = 4 [(google.api.field_behavior) = REQUIRED];
+  repeated string examples = 5;
+  repeated string input_modes = 6;
+  repeated string output_modes = 7;
+  repeated SecurityRequirement security_requirements = 8;
+}
+
+message AgentCardSignature {
+  string protected = 1 [(google.api.field_behavior) = REQUIRED];
+  string signature = 2 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Struct header = 3;
+}
+
+message TaskPushNotificationConfig {
+  string tenant = 1;
+  string id = 2;
+  string task_id = 3;
+  string url = 4 [(google.api.field_behavior) = REQUIRED];
+  string token = 5;
+  AuthenticationInfo authentication = 6;
+}
+
+message StringList {
+  repeated string list = 1;
+}
+
+message SecurityRequirement {
+  map<string, StringList> schemes = 1;
+}
+
+message SecurityScheme {
+  oneof scheme {
+    APIKeySecurityScheme api_key_security_scheme = 1;
+    HTTPAuthSecurityScheme http_auth_security_scheme = 2;
+    OAuth2SecurityScheme oauth2_security_scheme = 3;
+    OpenIdConnectSecurityScheme open_id_connect_security_scheme = 4;
+    MutualTlsSecurityScheme mtls_security_scheme = 5;
+  }
+}
+
+message APIKeySecurityScheme {
+  string description = 1;
+  string location = 2 [(google.api.field_behavior) = REQUIRED];
+  string name = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+message HTTPAuthSecurityScheme {
+  string description = 1;
+  string scheme = 2 [(google.api.field_behavior) = REQUIRED];
+  string bearer_format = 3;
+}
+
+message OAuth2SecurityScheme {
+  string description = 1;
+  OAuthFlows flows = 2 [(google.api.field_behavior) = REQUIRED];
+  string oauth2_metadata_url = 3;
+}
+
+message OpenIdConnectSecurityScheme {
+  string description = 1;
+  string open_id_connect_url = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message MutualTlsSecurityScheme {
+  string description = 1;
+}
+
+message OAuthFlows {
+  oneof flow {
+    AuthorizationCodeOAuthFlow authorization_code = 1;
+    ClientCredentialsOAuthFlow client_credentials = 2;
+    ImplicitOAuthFlow implicit = 3 [deprecated = true];
+    PasswordOAuthFlow password = 4 [deprecated = true];
+    DeviceCodeOAuthFlow device_code = 5;
+  }
+}
+
+message AuthorizationCodeOAuthFlow {
+  string authorization_url = 1 [(google.api.field_behavior) = REQUIRED];
+  string token_url = 2 [(google.api.field_behavior) = REQUIRED];
+  string refresh_url = 3;
+  map<string, string> scopes = 4 [(google.api.field_behavior) = REQUIRED];
+  bool pkce_required = 5;
+}
+
+message ClientCredentialsOAuthFlow {
+  string token_url = 1 [(google.api.field_behavior) = REQUIRED];
+  string refresh_url = 2;
+  map<string, string> scopes = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ImplicitOAuthFlow {
+  string authorization_url = 1;
+  string refresh_url = 2;
+  map<string, string> scopes = 3;
+}
+
+message PasswordOAuthFlow {
+  string token_url = 1;
+  string refresh_url = 2;
+  map<string, string> scopes = 3;
+}
+
+message DeviceCodeOAuthFlow {
+  string device_authorization_url = 1 [(google.api.field_behavior) = REQUIRED];
+  string token_url = 2 [(google.api.field_behavior) = REQUIRED];
+  string refresh_url = 3;
+  map<string, string> scopes = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+message SendMessageRequest {
+  string tenant = 1;
+  Message message = 2 [(google.api.field_behavior) = REQUIRED];
+  SendMessageConfiguration configuration = 3;
+  google.protobuf.Struct metadata = 4;
+}
+
+message GetTaskRequest {
+  string tenant = 1;
+  string id = 2 [(google.api.field_behavior) = REQUIRED];
+  optional int32 history_length = 3;
+}
+
+message ListTasksRequest {
+  string tenant = 1;
+  string context_id = 2;
+  TaskState status = 3;
+  optional int32 page_size = 4;
+  string page_token = 5;
+  optional int32 history_length = 6;
+  google.protobuf.Timestamp status_timestamp_after = 7;
+  optional bool include_artifacts = 8;
+}
+
+message ListTasksResponse {
+  repeated Task tasks = 1 [(google.api.field_behavior) = REQUIRED];
+  string next_page_token = 2 [(google.api.field_behavior) = REQUIRED];
+  int32 page_size = 3 [(google.api.field_behavior) = REQUIRED];
+  int32 total_size = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+message CancelTaskRequest {
+  string tenant = 1;
+  string id = 2 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Struct metadata = 3;
+}
+
+message GetTaskPushNotificationConfigRequest {
+  string tenant = 1;
+  string task_id = 2 [(google.api.field_behavior) = REQUIRED];
+  string id = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeleteTaskPushNotificationConfigRequest {
+  string tenant = 1;
+  string task_id = 2 [(google.api.field_behavior) = REQUIRED];
+  string id = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+message SubscribeToTaskRequest {
+  string tenant = 1;
+  string id = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListTaskPushNotificationConfigsRequest {
+  string tenant = 4;
+  string task_id = 1 [(google.api.field_behavior) = REQUIRED];
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message GetExtendedAgentCardRequest {
+  string tenant = 1;
+}
+
+message SendMessageResponse {
+  oneof payload {
+    Task task = 1;
+    Message message = 2;
+  }
+}
+
+message StreamResponse {
+  oneof payload {
+    Task task = 1;
+    Message message = 2;
+    TaskStatusUpdateEvent status_update = 3;
+    TaskArtifactUpdateEvent artifact_update = 4;
+  }
+}
+
+message ListTaskPushNotificationConfigsResponse {
+  repeated TaskPushNotificationConfig configs = 1;
+  string next_page_token = 2;
+}
