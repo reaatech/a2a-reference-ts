@@ -24,17 +24,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "verbatimModuleSyntax": true,
-    "baseUrl": ".",
-    "paths": {
-      "@a2a-ref/core": ["./packages/core/src/index.ts"],
-      "@a2a-ref/client": ["./packages/client/src/index.ts"],
-      "@a2a-ref/server": ["./packages/server/src/index.ts"],
-      "@a2a-ref/auth": ["./packages/auth/src/index.ts"],
-      "@a2a-ref/observability": ["./packages/observability/src/index.ts"],
-      "@a2a-ref/persistence": ["./packages/persistence/src/index.ts"],
-      "@a2a-ref/mcp-bridge": ["./packages/mcp-bridge/src/index.ts"]
-    }
+    "verbatimModuleSyntax": true
   },
   "exclude": ["node_modules", "dist", "*.config.js"]
 }
