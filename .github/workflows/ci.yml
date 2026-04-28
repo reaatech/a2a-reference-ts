@@ -100,7 +100,7 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Check formatting
-        run: pnpm biome format --check .
+        run: pnpm biome format --write . && git diff --exit-code
 
   # ─────────────────────────────────────────────
   # Lint
