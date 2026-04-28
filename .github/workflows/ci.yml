@@ -195,6 +195,9 @@ jobs:
             */*/node_modules
           key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
+      - name: Re-link workspace packages
+        run: pnpm install --frozen-lockfile --prefer-offline
+
       - name: Build packages
         run: pnpm build
 
@@ -240,6 +243,9 @@ jobs:
             */*/node_modules
           key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
+      - name: Re-link workspace packages
+        run: pnpm install --frozen-lockfile --prefer-offline
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
@@ -276,6 +282,9 @@ jobs:
             node_modules
             */*/node_modules
           key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Re-link workspace packages
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
