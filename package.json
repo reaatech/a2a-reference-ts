@@ -1,6 +1,7 @@
 {
   "name": "a2a-reference-ts",
   "version": "0.1.0",
+  "private": true,
   "description": "Enterprise-grade TypeScript reference implementation of the A2A protocol with A2A↔MCP bridge",
   "type": "module",
   "scripts": {
