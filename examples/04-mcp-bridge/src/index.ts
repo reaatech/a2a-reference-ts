@@ -1,6 +1,6 @@
-import { McpToolAdapter } from '@a2a-ref/mcp-bridge';
-import { createA2AExpressApp } from '@a2a-ref/server';
-import type { AgentExecutor } from '@a2a-ref/server';
+import { McpToolAdapter } from '@reaatech/a2a-reference-mcp-bridge';
+import { createA2AExpressApp } from '@reaatech/a2a-reference-server';
+import type { AgentExecutor } from '@reaatech/a2a-reference-server';
 
 /**
  * MCP Bridge Demo

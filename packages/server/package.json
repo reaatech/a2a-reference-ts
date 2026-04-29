@@ -1,5 +1,5 @@
 {
-  "name": "@a2a-ref/server",
+  "name": "@reaatech/a2a-reference-server",
   "version": "0.1.0",
   "description": "A2A server framework with Express and Hono adapters",
   "type": "module",
@@ -14,6 +14,9 @@
     }
   },
   "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "test": "vitest run",
@@ -21,10 +24,10 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@a2a-ref/auth": "workspace:*",
-    "@a2a-ref/core": "workspace:*",
-    "@a2a-ref/observability": "workspace:*",
-    "@a2a-ref/persistence": "workspace:*",
+    "@reaatech/a2a-reference-auth": "workspace:*",
+    "@reaatech/a2a-reference-core": "workspace:*",
+    "@reaatech/a2a-reference-observability": "workspace:*",
+    "@reaatech/a2a-reference-persistence": "workspace:*",
     "express": "^5.1.0",
     "hono": "^4.7.7",
     "zod": "^3.24.2"

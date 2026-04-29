@@ -1,5 +1,5 @@
 {
-  "name": "@a2a-ref/client",
+  "name": "@reaatech/a2a-reference-client",
   "version": "0.1.0",
   "description": "A2A client SDK for discovery and task management",
   "type": "module",
@@ -14,6 +14,9 @@
     }
   },
   "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "test": "vitest run",
@@ -21,11 +24,11 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@a2a-ref/core": "workspace:*",
+    "@reaatech/a2a-reference-core": "workspace:*",
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@a2a-ref/server": "workspace:*",
+    "@reaatech/a2a-reference-server": "workspace:*",
     "@types/node": "^25.6.0",
     "express": "^5.1.0",
     "tsup": "^8.4.0",

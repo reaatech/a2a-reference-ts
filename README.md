@@ -22,29 +22,29 @@ This monorepo provides canonical types, a server framework, a client SDK, and su
 
 ### Using the packages
 
-Packages are published under the `@a2a-ref` scope and can be installed individually:
+Packages are published under the `@reaatech` scope and can be installed individually:
 
 ```bash
 # Core types and schemas
-pnpm add @a2a-ref/core
+pnpm add @reaatech/a2a-reference-core
 
 # Server framework
-pnpm add @a2a-ref/server
+pnpm add @reaatech/a2a-reference-server
 
 # Client SDK
-pnpm add @a2a-ref/client
+pnpm add @reaatech/a2a-reference-client
 
 # Authentication strategies
-pnpm add @a2a-ref/auth
+pnpm add @reaatech/a2a-reference-auth
 
 # Task persistence
-pnpm add @a2a-ref/persistence
+pnpm add @reaatech/a2a-reference-persistence
 
 # A2A ↔ MCP bridge
-pnpm add @a2a-ref/mcp-bridge
+pnpm add @reaatech/a2a-reference-mcp-bridge
 
 # Observability utilities
-pnpm add @a2a-ref/observability
+pnpm add @reaatech/a2a-reference-observability
 ```
 
 ### Contributing
@@ -72,7 +72,7 @@ pnpm lint
 Create a minimal A2A agent with the server framework:
 
 ```typescript
-import { createA2AServer } from "@a2a-ref/server";
+import { createA2AServer } from "@reaatech/a2a-reference-server";
 import { z } from "zod";
 
 const server = createA2AServer({
@@ -102,13 +102,13 @@ See the [`examples/`](./examples/) directory for complete working samples, inclu
 
 | Package | Description |
 | ------- | ----------- |
-| [`@a2a-ref/core`](./packages/core) | Canonical A2A types and Zod schemas |
-| [`@a2a-ref/server`](./packages/server) | A2A server framework (Express + Hono) |
-| [`@a2a-ref/client`](./packages/client) | A2A client SDK |
-| [`@a2a-ref/auth`](./packages/auth) | Pluggable authentication strategies |
-| [`@a2a-ref/persistence`](./packages/persistence) | Task store abstractions |
-| [`@a2a-ref/mcp-bridge`](./packages/mcp-bridge) | A2A ↔ MCP bidirectional adapter |
-| [`@a2a-ref/observability`](./packages/observability) | Logging, tracing, and metrics |
+| [`@reaatech/a2a-reference-core`](./packages/core) | Canonical A2A types and Zod schemas |
+| [`@reaatech/a2a-reference-server`](./packages/server) | A2A server framework (Express + Hono) |
+| [`@reaatech/a2a-reference-client`](./packages/client) | A2A client SDK |
+| [`@reaatech/a2a-reference-auth`](./packages/auth) | Pluggable authentication strategies |
+| [`@reaatech/a2a-reference-persistence`](./packages/persistence) | Task store abstractions |
+| [`@reaatech/a2a-reference-mcp-bridge`](./packages/mcp-bridge) | A2A ↔ MCP bidirectional adapter |
+| [`@reaatech/a2a-reference-observability`](./packages/observability) | Logging, tracing, and metrics |
 
 ## Documentation
 

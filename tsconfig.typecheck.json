@@ -3,13 +3,13 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@a2a-ref/core": ["./packages/core/src/index.ts"],
-      "@a2a-ref/client": ["./packages/client/src/index.ts"],
-      "@a2a-ref/server": ["./packages/server/src/index.ts"],
-      "@a2a-ref/auth": ["./packages/auth/src/index.ts"],
-      "@a2a-ref/observability": ["./packages/observability/src/index.ts"],
-      "@a2a-ref/persistence": ["./packages/persistence/src/index.ts"],
-      "@a2a-ref/mcp-bridge": ["./packages/mcp-bridge/src/index.ts"]
+      "@reaatech/a2a-reference-core": ["./packages/core/src/index.ts"],
+      "@reaatech/a2a-reference-client": ["./packages/client/src/index.ts"],
+      "@reaatech/a2a-reference-server": ["./packages/server/src/index.ts"],
+      "@reaatech/a2a-reference-auth": ["./packages/auth/src/index.ts"],
+      "@reaatech/a2a-reference-observability": ["./packages/observability/src/index.ts"],
+      "@reaatech/a2a-reference-persistence": ["./packages/persistence/src/index.ts"],
+      "@reaatech/a2a-reference-mcp-bridge": ["./packages/mcp-bridge/src/index.ts"]
     }
   }
 }

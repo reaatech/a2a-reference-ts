@@ -1,5 +1,5 @@
 {
-  "name": "@a2a-ref/observability",
+  "name": "@reaatech/a2a-reference-observability",
   "version": "0.1.0",
   "description": "Structured logging, tracing, and metrics for A2A agents",
   "type": "module",
@@ -14,6 +14,9 @@
     }
   },
   "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "test": "vitest run",

@@ -23,7 +23,7 @@ When an A2A task targets that skill, the bridge:
 
 ### Configuration Example
 ```ts
-import { McpToolAdapter } from '@a2a-ref/mcp-bridge';
+import { McpToolAdapter } from '@reaatech/a2a-reference-mcp-bridge';
 
 const adapter = new McpToolAdapter({
   serverUrl: 'http://localhost:3001/sse',
@@ -46,7 +46,7 @@ If the A2A agent enters the `input-required` state, the bridge can translate tha
 
 ### Configuration Example
 ```ts
-import { A2aAsMcpServer } from '@a2a-ref/mcp-bridge';
+import { A2aAsMcpServer } from '@reaatech/a2a-reference-mcp-bridge';
 
 const mcpServer = new A2aAsMcpServer({
   a2aAgentUrl: 'https://agent.example.com',

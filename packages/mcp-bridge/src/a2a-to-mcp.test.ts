@@ -1,4 +1,4 @@
-import type { AgentCard, Skill } from '@a2a-ref/core';
+import type { AgentCard, Skill } from '@reaatech/a2a-reference-core';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { A2aAsMcpServer } from './a2a-to-mcp.js';
@@ -41,7 +41,7 @@ const mockServerState = vi.hoisted(() => ({
 }));
 
 // Mock the A2AClient
-vi.mock('@a2a-ref/client', () => ({
+vi.mock('@reaatech/a2a-reference-client', () => ({
   A2AClient: vi.fn().mockImplementation(() => ({
     getAgentCard: vi.fn().mockImplementation(() => Promise.resolve(mockA2AState.agentCard)),
     sendMessage: vi.fn().mockImplementation(() => Promise.resolve(mockA2AState.sendMessageResult)),

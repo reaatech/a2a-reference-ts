@@ -1,7 +1,7 @@
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import type { Task } from '@a2a-ref/core';
+import type { Task } from '@reaatech/a2a-reference-core';
 import { describe, expect, it } from 'vitest';
 import { FileSystemTaskStore } from './file-system.js';
 

@@ -29,13 +29,13 @@ importers:
 
   e2e:
     dependencies:
-      '@a2a-ref/client':
+      '@reaatech/a2a-reference-client':
         specifier: workspace:*
         version: link:../packages/client
-      '@a2a-ref/core':
+      '@reaatech/a2a-reference-core':
         specifier: workspace:*
         version: link:../packages/core
-      '@a2a-ref/server':
+      '@reaatech/a2a-reference-server':
         specifier: workspace:*
         version: link:../packages/server
     devDependencies:
@@ -51,10 +51,10 @@ importers:
 
   examples/01-hello-agent:
     dependencies:
-      '@a2a-ref/core':
+      '@reaatech/a2a-reference-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@a2a-ref/server':
+      '@reaatech/a2a-reference-server':
         specifier: workspace:*
         version: link:../../packages/server
     devDependencies:
@@ -70,13 +70,13 @@ importers:
 
   examples/02-task-streaming:
     dependencies:
-      '@a2a-ref/client':
+      '@reaatech/a2a-reference-client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@a2a-ref/core':
+      '@reaatech/a2a-reference-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@a2a-ref/server':
+      '@reaatech/a2a-reference-server':
         specifier: workspace:*
         version: link:../../packages/server
     devDependencies:
@@ -92,13 +92,13 @@ importers:
 
   examples/03-multi-agent-workflow:
     dependencies:
-      '@a2a-ref/client':
+      '@reaatech/a2a-reference-client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@a2a-ref/core':
+      '@reaatech/a2a-reference-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@a2a-ref/server':
+      '@reaatech/a2a-reference-server':
         specifier: workspace:*
         version: link:../../packages/server
     devDependencies:
@@ -117,13 +117,13 @@ importers:
 
   examples/04-mcp-bridge:
     dependencies:
-      '@a2a-ref/core':
+      '@reaatech/a2a-reference-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@a2a-ref/mcp-bridge':
+      '@reaatech/a2a-reference-mcp-bridge':
         specifier: workspace:*
         version: link:../../packages/mcp-bridge
-      '@a2a-ref/server':
+      '@reaatech/a2a-reference-server':
         specifier: workspace:*
         version: link:../../packages/server
     devDependencies:
@@ -139,16 +139,16 @@ importers:
 
   examples/05-auth-workflow:
     dependencies:
-      '@a2a-ref/auth':
+      '@reaatech/a2a-reference-auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@a2a-ref/client':
+      '@reaatech/a2a-reference-client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@a2a-ref/core':
+      '@reaatech/a2a-reference-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@a2a-ref/server':
+      '@reaatech/a2a-reference-server':
         specifier: workspace:*
         version: link:../../packages/server
     devDependencies:
@@ -183,14 +183,14 @@ importers:
 
   packages/client:
     dependencies:
-      '@a2a-ref/core':
+      '@reaatech/a2a-reference-core':
         specifier: workspace:*
         version: link:../core
       zod:
         specifier: ^3.24.2
         version: 3.25.76
     devDependencies:
-      '@a2a-ref/server':
+      '@reaatech/a2a-reference-server':
         specifier: workspace:*
         version: link:../server
       '@types/node':
@@ -227,18 +227,18 @@ importers:
 
   packages/mcp-bridge:
     dependencies:
-      '@a2a-ref/client':
-        specifier: workspace:*
-        version: link:../client
-      '@a2a-ref/core':
-        specifier: workspace:*
-        version: link:../core
-      '@a2a-ref/observability':
-        specifier: workspace:*
-        version: link:../observability
       '@modelcontextprotocol/sdk':
         specifier: ^1.12.0
         version: 1.29.0(zod@3.25.76)
+      '@reaatech/a2a-reference-client':
+        specifier: workspace:*
+        version: link:../client
+      '@reaatech/a2a-reference-core':
+        specifier: workspace:*
+        version: link:../core
+      '@reaatech/a2a-reference-observability':
+        specifier: workspace:*
+        version: link:../observability
       zod:
         specifier: ^3.24.2
         version: 3.25.76
@@ -280,7 +280,7 @@ importers:
 
   packages/persistence:
     dependencies:
-      '@a2a-ref/core':
+      '@reaatech/a2a-reference-core':
         specifier: workspace:*
         version: link:../core
       ioredis:
@@ -302,16 +302,16 @@ importers:
 
   packages/server:
     dependencies:
-      '@a2a-ref/auth':
+      '@reaatech/a2a-reference-auth':
         specifier: workspace:*
         version: link:../auth
-      '@a2a-ref/core':
+      '@reaatech/a2a-reference-core':
         specifier: workspace:*
         version: link:../core
-      '@a2a-ref/observability':
+      '@reaatech/a2a-reference-observability':
         specifier: workspace:*
         version: link:../observability
-      '@a2a-ref/persistence':
+      '@reaatech/a2a-reference-persistence':
         specifier: workspace:*
         version: link:../persistence
       express:

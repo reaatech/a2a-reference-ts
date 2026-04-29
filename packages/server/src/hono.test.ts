@@ -1,5 +1,5 @@
-import { ApiKeyStrategy, NoneStrategy } from '@a2a-ref/auth';
-import { InMemoryTaskStore } from '@a2a-ref/persistence';
+import { ApiKeyStrategy, NoneStrategy } from '@reaatech/a2a-reference-auth';
+import { InMemoryTaskStore } from '@reaatech/a2a-reference-persistence';
 import { describe, expect, it, vi } from 'vitest';
 import type { AgentExecutor } from './executor.js';
 import { createA2AHonoApp } from './hono.js';

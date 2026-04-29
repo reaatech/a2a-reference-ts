@@ -1,4 +1,4 @@
-import { A2AClient } from '@a2a-ref/client';
+import { A2AClient } from '@reaatech/a2a-reference-client';
 import type {
   AgentCard,
   Message,
@@ -6,9 +6,9 @@ import type {
   Task,
   TaskState,
   TaskStatusUpdateEvent,
-} from '@a2a-ref/core';
-import { createLogger } from '@a2a-ref/observability';
-import type { Logger } from '@a2a-ref/observability';
+} from '@reaatech/a2a-reference-core';
+import { createLogger } from '@reaatech/a2a-reference-observability';
+import type { Logger } from '@reaatech/a2a-reference-observability';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {

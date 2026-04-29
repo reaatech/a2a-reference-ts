@@ -1,5 +1,5 @@
 {
-  "name": "@a2a-ref/mcp-bridge",
+  "name": "@reaatech/a2a-reference-mcp-bridge",
   "version": "0.1.0",
   "description": "A2A ↔ MCP bidirectional protocol adapter",
   "type": "module",
@@ -14,6 +14,9 @@
     }
   },
   "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "test": "vitest run",
@@ -21,9 +24,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@a2a-ref/client": "workspace:*",
-    "@a2a-ref/core": "workspace:*",
-    "@a2a-ref/observability": "workspace:*",
+    "@reaatech/a2a-reference-client": "workspace:*",
+    "@reaatech/a2a-reference-core": "workspace:*",
+    "@reaatech/a2a-reference-observability": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.12.0",
     "zod": "^3.24.2"
   },

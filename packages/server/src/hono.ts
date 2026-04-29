@@ -1,5 +1,5 @@
-import type { AuthResult, AuthStrategy } from '@a2a-ref/auth';
-import type { AgentCard, Task } from '@a2a-ref/core';
+import type { AuthResult, AuthStrategy } from '@reaatech/a2a-reference-auth';
+import type { AgentCard, Task } from '@reaatech/a2a-reference-core';
 import {
   CancelTaskRequestSchema,
   GetTaskRequestSchema,
@@ -7,8 +7,8 @@ import {
   SendMessageRequestSchema,
   TaskNotCancelableError,
   TaskNotFoundError,
-} from '@a2a-ref/core';
-import { InMemoryTaskStore, type TaskStore } from '@a2a-ref/persistence';
+} from '@reaatech/a2a-reference-core';
+import { InMemoryTaskStore, type TaskStore } from '@reaatech/a2a-reference-persistence';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { AgentExecutor } from './executor.js';

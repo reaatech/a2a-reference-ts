@@ -1,4 +1,4 @@
-import type { Message, Task, TaskArtifactUpdateEvent, TaskStatusUpdateEvent } from '@a2a-ref/core';
+import type { Message, Task, TaskArtifactUpdateEvent, TaskStatusUpdateEvent } from '@reaatech/a2a-reference-core';
 
 export interface ExecutionContext {
   task: Task;

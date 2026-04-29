@@ -57,7 +57,7 @@ pnpm typecheck
 ## Adding a New Package
 
 1. Create `packages/<name>/` with `package.json`, `tsconfig.json`, `src/index.ts`
-2. Use `@a2a-ref/core` for shared types. Do not duplicate schemas.
+2. Use `@reaatech/a2a-reference-core` for shared types. Do not duplicate schemas.
 3. Add to `pnpm-workspace.yaml` if not under `packages/*`
 4. Run `pnpm install` from the package directory
 

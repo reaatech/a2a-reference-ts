@@ -1,8 +1,8 @@
-import type { AgentCard, Artifact, Message, Skill, Task } from '@a2a-ref/core';
-import { DataPartSchema, TextPartSchema } from '@a2a-ref/core';
-import { InvalidAgentResponseError } from '@a2a-ref/core';
-import { createLogger } from '@a2a-ref/observability';
-import type { Logger } from '@a2a-ref/observability';
+import type { AgentCard, Artifact, Message, Skill, Task } from '@reaatech/a2a-reference-core';
+import { DataPartSchema, TextPartSchema } from '@reaatech/a2a-reference-core';
+import { InvalidAgentResponseError } from '@reaatech/a2a-reference-core';
+import { createLogger } from '@reaatech/a2a-reference-observability';
+import type { Logger } from '@reaatech/a2a-reference-observability';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import {

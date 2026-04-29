@@ -1,4 +1,4 @@
-import type { Artifact, Message, Task, TaskStatus } from '@a2a-ref/core';
+import type { Artifact, Message, Task, TaskStatus } from '@reaatech/a2a-reference-core';
 
 export interface TaskStore {
   create(task: Task): Promise<void>;

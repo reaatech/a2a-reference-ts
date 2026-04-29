@@ -1,5 +1,5 @@
 {
-  "name": "@a2a-ref/example-task-streaming",
+  "name": "@reaatech/a2a-reference-example-task-streaming",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,9 +9,9 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@a2a-ref/client": "workspace:*",
-    "@a2a-ref/core": "workspace:*",
-    "@a2a-ref/server": "workspace:*"
+    "@reaatech/a2a-reference-client": "workspace:*",
+    "@reaatech/a2a-reference-core": "workspace:*",
+    "@reaatech/a2a-reference-server": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",

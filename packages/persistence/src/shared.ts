@@ -1,4 +1,4 @@
-import type { Task } from '@a2a-ref/core';
+import type { Task } from '@reaatech/a2a-reference-core';
 
 export function applyHistoryLength(task: Task, historyLength?: number): Task {
   if (historyLength === undefined || historyLength < 0) return task;

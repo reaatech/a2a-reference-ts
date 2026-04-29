@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { clearInterval } from 'node:timers';
-import type { Artifact, Message, Task, TaskStatus } from '@a2a-ref/core';
+import type { Artifact, Message, Task, TaskStatus } from '@reaatech/a2a-reference-core';
 import { applyHistoryLength, getTaskHistoryLength } from './shared.js';
 import type { TaskStore } from './store.js';
 

@@ -1,5 +1,5 @@
-import { NoneStrategy } from '@a2a-ref/auth';
-import { InMemoryTaskStore } from '@a2a-ref/persistence';
+import { NoneStrategy } from '@reaatech/a2a-reference-auth';
+import { InMemoryTaskStore } from '@reaatech/a2a-reference-persistence';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import type { AgentExecutor } from './executor.js';

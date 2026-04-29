@@ -1,6 +1,6 @@
-import { TaskNotFoundError } from '@a2a-ref/core';
-import { createA2AExpressApp } from '@a2a-ref/server';
-import type { AgentExecutor, ExecutionContext, ExecutionEventBus } from '@a2a-ref/server';
+import { TaskNotFoundError } from '@reaatech/a2a-reference-core';
+import { createA2AExpressApp } from '@reaatech/a2a-reference-server';
+import type { AgentExecutor, ExecutionContext, ExecutionEventBus } from '@reaatech/a2a-reference-server';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { A2AClient } from './client.js';
 

@@ -1,6 +1,6 @@
-import type { AuthResult } from '@a2a-ref/auth';
+import type { AuthResult } from '@reaatech/a2a-reference-auth';
 
-import type { TaskStore } from '@a2a-ref/persistence';
+import type { TaskStore } from '@reaatech/a2a-reference-persistence';
 import type { ExecutionEventBus } from './executor.js';
 
 export const VALID_STATE_TRANSITIONS: Record<string, string[]> = {

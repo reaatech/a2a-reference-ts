@@ -3,7 +3,7 @@ import {
   InvalidAgentResponseError,
   TaskNotFoundError,
   UnsupportedOperationError,
-} from '@a2a-ref/core';
+} from '@reaatech/a2a-reference-core';
 import { describe, expect, it, vi } from 'vitest';
 import { A2AClient } from './client.js';
 

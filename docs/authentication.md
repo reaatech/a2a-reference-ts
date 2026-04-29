@@ -4,20 +4,20 @@
 
 ### None (Development / Open Agents)
 ```ts
-import { NoneStrategy } from '@a2a-ref/auth';
+import { NoneStrategy } from '@reaatech/a2a-reference-auth';
 const auth = new NoneStrategy();
 ```
 Use `NoneStrategy` for local development or when the agent is intentionally public.
 
 ### API Key
 ```ts
-import { ApiKeyStrategy } from '@a2a-ref/auth';
+import { ApiKeyStrategy } from '@reaatech/a2a-reference-auth';
 const auth = new ApiKeyStrategy({ keys: new Set(['secret']) });
 ```
 
 ### JWT (RS256)
 ```ts
-import { JwtStrategy } from '@a2a-ref/auth';
+import { JwtStrategy } from '@reaatech/a2a-reference-auth';
 const auth = new JwtStrategy({ publicKey: '-----BEGIN PUBLIC KEY-----...' });
 ```
 
@@ -32,7 +32,7 @@ const auth = new JwtStrategy({ jwksUri: 'https://auth.example.com/.well-known/jw
 
 ## Wiring into Server
 ```ts
-import { createA2AExpressApp } from '@a2a-ref/server';
+import { createA2AExpressApp } from '@reaatech/a2a-reference-server';
 const app = createA2AExpressApp({ agentCard, executor, authStrategy: auth });
 ```
 

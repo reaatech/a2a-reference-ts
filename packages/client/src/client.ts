@@ -14,7 +14,7 @@ import {
   type TaskStatusUpdateEvent,
   TaskStatusUpdateEventSchema,
   UnsupportedOperationError,
-} from '@a2a-ref/core';
+} from '@reaatech/a2a-reference-core';
 import { z } from 'zod';
 
 const EXPECTED_PROTOCOL_VERSION = '0.3.0';

@@ -1,7 +1,7 @@
-import { ApiKeyStrategy } from '@a2a-ref/auth';
-import { A2AClient } from '@a2a-ref/client';
-import { createA2AExpressApp } from '@a2a-ref/server';
-import type { AgentExecutor, ExecutionContext, ExecutionEventBus } from '@a2a-ref/server';
+import { ApiKeyStrategy } from '@reaatech/a2a-reference-auth';
+import { A2AClient } from '@reaatech/a2a-reference-client';
+import { createA2AExpressApp } from '@reaatech/a2a-reference-server';
+import type { AgentExecutor, ExecutionContext, ExecutionEventBus } from '@reaatech/a2a-reference-server';
 
 const apiKey = 'secret-api-key-12345';
 
