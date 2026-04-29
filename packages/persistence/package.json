@@ -2,6 +2,17 @@
   "name": "@reaatech/a2a-reference-persistence",
   "version": "0.1.0",
   "description": "Task store abstractions for A2A task persistence",
+  "license": "MIT",
+  "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reaatech/a2a-reference-ts.git",
+    "directory": "packages/persistence"
+  },
+  "homepage": "https://github.com/reaatech/a2a-reference-ts/tree/main/packages/persistence#readme",
+  "bugs": {
+    "url": "https://github.com/reaatech/a2a-reference-ts/issues"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -13,7 +24,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
