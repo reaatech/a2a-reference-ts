@@ -1,3 +1,10 @@
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  type Tool,
+} from '@modelcontextprotocol/sdk/types.js';
 import { A2AClient } from '@reaatech/a2a-reference-client';
 import type {
   AgentCard,
@@ -9,13 +16,6 @@ import type {
 } from '@reaatech/a2a-reference-core';
 import { createLogger } from '@reaatech/a2a-reference-observability';
 import type { Logger } from '@reaatech/a2a-reference-observability';
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-  type Tool,
-} from '@modelcontextprotocol/sdk/types.js';
 
 export interface A2aAsMcpServerOptions {
   a2aAgentUrl: string;

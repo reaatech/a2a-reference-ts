@@ -1,5 +1,5 @@
-import type { AgentCard, Skill } from '@reaatech/a2a-reference-core';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import type { AgentCard, Skill } from '@reaatech/a2a-reference-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { A2aAsMcpServer } from './a2a-to-mcp.js';
 

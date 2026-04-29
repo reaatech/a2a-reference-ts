@@ -1,5 +1,9 @@
 import { createA2AExpressApp } from '@reaatech/a2a-reference-server';
-import type { AgentExecutor, ExecutionContext, ExecutionEventBus } from '@reaatech/a2a-reference-server';
+import type {
+  AgentExecutor,
+  ExecutionContext,
+  ExecutionEventBus,
+} from '@reaatech/a2a-reference-server';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { A2AClient } from './client.js';
 

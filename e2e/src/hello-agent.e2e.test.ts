@@ -1,6 +1,10 @@
 import { A2AClient } from '@reaatech/a2a-reference-client';
 import { createA2AExpressApp } from '@reaatech/a2a-reference-server';
-import type { AgentExecutor, ExecutionContext, ExecutionEventBus } from '@reaatech/a2a-reference-server';
+import type {
+  AgentExecutor,
+  ExecutionContext,
+  ExecutionEventBus,
+} from '@reaatech/a2a-reference-server';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 const agentCard = {
