@@ -40,7 +40,7 @@
     "@reaatech/a2a-reference-observability": "workspace:*",
     "@reaatech/a2a-reference-persistence": "workspace:*",
     "express": "^5.1.0",
-    "hono": "^4.7.7",
+    "hono": "^4.12.18",
     "zod": "^3.24.2"
   },
   "devDependencies": {
