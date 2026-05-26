@@ -27,9 +27,7 @@
   "bin": {
     "a2a": "./dist/index.js"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "publishConfig": {
     "access": "public"
   },
