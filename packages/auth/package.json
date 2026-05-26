@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/a2a-reference-auth",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Pluggable authentication and authorization for A2A",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
@@ -24,7 +24,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },

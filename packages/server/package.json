@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/a2a-reference-server",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A2A server framework with Express and Hono adapters",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
@@ -24,7 +24,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
