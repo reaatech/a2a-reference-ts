@@ -1,0 +1,25 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "A2A Reference TypeScript",
+  "entryPoints": [
+    "packages/core/src/index.ts",
+    "packages/server/src/index.ts",
+    "packages/client/src/index.ts",
+    "packages/auth/src/index.ts",
+    "packages/persistence/src/index.ts",
+    "packages/mcp-bridge/src/index.ts",
+    "packages/observability/src/index.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "docs/api",
+  "tsconfig": "tsconfig.json",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "excludeInternal": true,
+  "categorizeByGroup": true,
+  "sort": ["source-order"],
+  "plugin": [],
+  "readme": "README.md"
+}

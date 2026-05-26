@@ -9,7 +9,8 @@
       "@reaatech/a2a-reference-auth": ["./packages/auth/src/index.ts"],
       "@reaatech/a2a-reference-observability": ["./packages/observability/src/index.ts"],
       "@reaatech/a2a-reference-persistence": ["./packages/persistence/src/index.ts"],
-      "@reaatech/a2a-reference-mcp-bridge": ["./packages/mcp-bridge/src/index.ts"]
+      "@reaatech/a2a-reference-mcp-bridge": ["./packages/mcp-bridge/src/index.ts"],
+      "@reaatech/a2a-reference-cli": ["./packages/cli/src/index.ts"]
     }
   }
 }

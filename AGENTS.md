@@ -8,13 +8,14 @@ This is a **pnpm workspace monorepo** managed with Turborepo.
 
 ```
 packages/
-  core/         — Canonical A2A types, Zod schemas, error classes
+  core/         — Canonical A2A types, Zod schemas, error classes, signature verification
   server/       — A2A server framework (Express + Hono adapters)
   client/       — A2A client SDK
-  auth/         — Authentication strategies
-  persistence/  — Task store abstractions
+  auth/         — Authentication strategies (OAuth2, JWT, API key)
+  persistence/  — Task store abstractions (InMemory, Redis, Postgres, FileSystem)
   mcp-bridge/   — A2A ↔ MCP bidirectional adapter
-  observability/ — Logging, tracing, metrics
+  observability/ — Logging, tracing, metrics, telemetry
+  cli/          — Agent scaffolding CLI (a2a init)
 ```
 
 ## Build System
@@ -28,21 +29,14 @@ packages/
 ### Common Commands
 
 ```bash
-# Install all dependencies
-pnpm install
-
-# Build everything
-pnpm build
-
-# Run all tests
-pnpm test
-
-# Lint & format
-pnpm lint
-pnpm lint:fix
-
-# Type-check without emit
-pnpm typecheck
+pnpm install          # Install all dependencies
+pnpm build            # Build everything
+pnpm test             # Run all tests
+pnpm test:coverage    # Run tests with coverage (>90% required)
+pnpm lint             # Lint & format check
+pnpm lint:fix         # Auto-fix lint issues
+pnpm typecheck        # Type-check without emit
+pnpm docs             # Generate TypeDoc API docs
 ```
 
 ## Coding Conventions
@@ -53,19 +47,19 @@ pnpm typecheck
 4. **Types:** Prefer `type` over `interface` for data shapes. Keep `interface` for class contracts.
 5. **No `any`:** Biome is configured to error on `any`. Use `unknown` + narrowing instead.
 6. **Exports:** Always provide ESM + CJS dual output with `types` condition first in `exports`.
+7. **Coverage:** All packages must maintain >90% statement coverage.
 
 ## Adding a New Package
 
 1. Create `packages/<name>/` with `package.json`, `tsconfig.json`, `src/index.ts`
 2. Use `@reaatech/a2a-reference-core` for shared types. Do not duplicate schemas.
-3. Add to `pnpm-workspace.yaml` if not under `packages/*`
-4. Run `pnpm install` from the package directory
+3. Run `pnpm install` from the package directory
 
 ## Testing
 
 - Unit tests live next to source files: `src/foo.test.ts`
 - E2E tests live in `e2e/`
-- Always run `pnpm test` before committing
+- Always run `pnpm test` and verify `pnpm test:coverage` before committing
 
 ## Protocol Compliance
 

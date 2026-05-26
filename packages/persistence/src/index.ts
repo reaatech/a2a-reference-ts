@@ -4,3 +4,5 @@ export { FileSystemTaskStore } from './file-system.js';
 export type { FileSystemTaskStoreOptions } from './file-system.js';
 export { RedisTaskStore } from './redis.js';
 export type { RedisTaskStoreOptions } from './redis.js';
+export { PostgresTaskStore } from './postgres.js';
+export type { PostgresTaskStoreOptions } from './postgres.js';

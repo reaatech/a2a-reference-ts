@@ -11,8 +11,8 @@ export interface ExecutionContext {
 }
 
 export interface ExecutionEventBus {
-  emitStatusUpdate(event: TaskStatusUpdateEvent): void;
-  emitArtifactUpdate(event: TaskArtifactUpdateEvent): void;
+  emitStatusUpdate(event: TaskStatusUpdateEvent): Promise<void>;
+  emitArtifactUpdate(event: TaskArtifactUpdateEvent): Promise<void>;
 }
 
 export interface AgentExecutor {

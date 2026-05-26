@@ -35,9 +35,11 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "jose": "^6.0.10",
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "tsup": "^8.4.0",
     "typescript": "^5.8.3",
     "vitest": "^3.1.1"

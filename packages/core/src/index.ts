@@ -17,6 +17,11 @@ export {
   HttpSecuritySchemeSchema,
   OAuth2SecuritySchemeSchema,
   OpenIdConnectSecuritySchemeSchema,
+  OAuthFlowsSchema,
+  AuthorizationCodeOAuthFlowSchema,
+  ClientCredentialsOAuthFlowSchema,
+  ImplicitOAuthFlowSchema,
+  PasswordOAuthFlowSchema,
 } from './types/agent-card.js';
 export type {
   AgentCard,
@@ -28,6 +33,11 @@ export type {
   HttpSecurityScheme,
   OAuth2SecurityScheme,
   OpenIdConnectSecurityScheme,
+  OAuthFlows,
+  AuthorizationCodeOAuthFlow,
+  ClientCredentialsOAuthFlow,
+  ImplicitOAuthFlow,
+  PasswordOAuthFlow,
 } from './types/agent-card.js';
 
 // Task
@@ -91,3 +101,18 @@ export {
   ExtensionSupportRequiredError,
   VersionNotSupportedError,
 } from './types/errors.js';
+
+// Signatures
+export {
+  AgentCardSignatureSchema,
+  MutualTlsSecuritySchemeSchema,
+  verifyAgentCardSignature,
+  verifyAgentCardSignatures,
+  canonicalizeAgentCard,
+  AgentCardSignatureError,
+} from './types/signature.js';
+export type {
+  AgentCardSignature,
+  MutualTlsSecurityScheme,
+  VerifyAgentCardSignatureOptions,
+} from './types/signature.js';

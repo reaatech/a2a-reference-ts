@@ -1,12 +1,23 @@
 import type { AuthResult } from '@reaatech/a2a-reference-auth';
 
+import { defaultLogger } from '@reaatech/a2a-reference-observability';
 import type { TaskStore } from '@reaatech/a2a-reference-persistence';
 import type { ExecutionEventBus } from './executor.js';
+import type { PushNotificationManager } from './push-notifications.js';
 
 export const VALID_STATE_TRANSITIONS: Record<string, string[]> = {
-  submitted: ['working', 'input-required', 'completed', 'failed', 'canceled', 'rejected'],
-  working: ['input-required', 'completed', 'failed', 'canceled'],
-  'input-required': ['working', 'completed', 'failed', 'canceled'],
+  submitted: [
+    'working',
+    'input-required',
+    'completed',
+    'failed',
+    'canceled',
+    'rejected',
+    'auth-required',
+  ],
+  working: ['input-required', 'completed', 'failed', 'canceled', 'auth-required'],
+  'input-required': ['working', 'completed', 'failed', 'canceled', 'auth-required'],
+  'auth-required': ['working', 'completed', 'failed', 'canceled'],
   completed: [],
   failed: [],
   canceled: [],
@@ -27,6 +38,7 @@ export function createEventBus(
   taskId: string,
   taskStore: TaskStore,
   broadcast: BroadcastFn,
+  pushNotificationManager?: PushNotificationManager,
 ): ExecutionEventBus {
   return {
     emitStatusUpdate: async (event) => {
@@ -40,10 +52,26 @@ export function createEventBus(
       }
       await taskStore.updateStatus(taskId, event.status);
       broadcast(taskId, { kind: 'status', status: event.status, final: event.final });
+      if (pushNotificationManager) {
+        // Fire-and-forget: webhook delivery (with retries) must not block execution.
+        void pushNotificationManager
+          .notifyStatusUpdate(task, event)
+          .catch((err) => defaultLogger.error({ err, taskId }, 'push status notification failed'));
+      }
     },
     emitArtifactUpdate: async (event) => {
       await taskStore.addArtifact(taskId, event.artifact);
       broadcast(taskId, { kind: 'artifact', artifact: event.artifact });
+      if (pushNotificationManager) {
+        const task = await taskStore.get(taskId);
+        if (task) {
+          void pushNotificationManager
+            .notifyArtifactUpdate(task, event)
+            .catch((err) =>
+              defaultLogger.error({ err, taskId }, 'push artifact notification failed'),
+            );
+        }
+      }
     },
   };
 }

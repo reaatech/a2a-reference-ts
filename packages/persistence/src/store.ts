@@ -7,6 +7,7 @@ export interface TaskStore {
   list(options?: {
     contextId?: string;
     status?: string;
+    principal?: string;
     pageSize?: number;
     pageToken?: string;
     historyLength?: number;
