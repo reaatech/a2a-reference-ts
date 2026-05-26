@@ -17,6 +17,11 @@ export {
   HttpSecuritySchemeSchema,
   OAuth2SecuritySchemeSchema,
   OpenIdConnectSecuritySchemeSchema,
+  OAuthFlowsSchema,
+  AuthorizationCodeOAuthFlowSchema,
+  ClientCredentialsOAuthFlowSchema,
+  ImplicitOAuthFlowSchema,
+  PasswordOAuthFlowSchema,
 } from './types/agent-card.js';
 export type {
   AgentCard,
@@ -28,6 +33,11 @@ export type {
   HttpSecurityScheme,
   OAuth2SecurityScheme,
   OpenIdConnectSecurityScheme,
+  OAuthFlows,
+  AuthorizationCodeOAuthFlow,
+  ClientCredentialsOAuthFlow,
+  ImplicitOAuthFlow,
+  PasswordOAuthFlow,
 } from './types/agent-card.js';
 
 // Task

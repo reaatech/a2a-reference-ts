@@ -35,7 +35,7 @@ export type AgentCardSignature = z.infer<typeof AgentCardSignatureSchema>;
  * configuration is established out of band at the transport layer.
  */
 export const MutualTlsSecuritySchemeSchema = z.object({
-  scheme: z.literal('mutualTLS'),
+  type: z.literal('mutualTLS'),
   description: z.string().optional(),
 });
 

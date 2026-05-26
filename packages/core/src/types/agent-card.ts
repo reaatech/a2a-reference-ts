@@ -10,8 +10,11 @@ export const CapabilitySchema = z.object({
 });
 export type Capability = z.infer<typeof CapabilitySchema>;
 
+// Security schemes follow the A2A spec (§4.5), modeled on the OpenAPI 3.x
+// Security Scheme Object and discriminated by the `type` field.
+
 export const ApiKeySecuritySchemeSchema = z.object({
-  scheme: z.literal('apiKey'),
+  type: z.literal('apiKey'),
   description: z.string().optional(),
   name: z.string(),
   in: z.enum(['header', 'query', 'cookie']),
@@ -19,32 +22,70 @@ export const ApiKeySecuritySchemeSchema = z.object({
 export type ApiKeySecurityScheme = z.infer<typeof ApiKeySecuritySchemeSchema>;
 
 export const HttpSecuritySchemeSchema = z.object({
-  scheme: z.literal('http'),
+  type: z.literal('http'),
   description: z.string().optional(),
+  // RFC 7235 HTTP Authentication scheme name (e.g. "Bearer", "Basic").
+  scheme: z.string(),
   bearerFormat: z.string().optional(),
-  httpScheme: z.literal('bearer'),
 });
 export type HttpSecurityScheme = z.infer<typeof HttpSecuritySchemeSchema>;
 
+// OAuth 2.0 flow definitions (A2A spec §4.5.7–4.5.10).
+const OAuthScopesSchema = z.record(z.string());
+
+export const AuthorizationCodeOAuthFlowSchema = z.object({
+  authorizationUrl: z.string().url(),
+  tokenUrl: z.string().url(),
+  refreshUrl: z.string().url().optional(),
+  scopes: OAuthScopesSchema,
+});
+export type AuthorizationCodeOAuthFlow = z.infer<typeof AuthorizationCodeOAuthFlowSchema>;
+
+export const ClientCredentialsOAuthFlowSchema = z.object({
+  tokenUrl: z.string().url(),
+  refreshUrl: z.string().url().optional(),
+  scopes: OAuthScopesSchema,
+});
+export type ClientCredentialsOAuthFlow = z.infer<typeof ClientCredentialsOAuthFlowSchema>;
+
+export const ImplicitOAuthFlowSchema = z.object({
+  authorizationUrl: z.string().url(),
+  refreshUrl: z.string().url().optional(),
+  scopes: OAuthScopesSchema,
+});
+export type ImplicitOAuthFlow = z.infer<typeof ImplicitOAuthFlowSchema>;
+
+export const PasswordOAuthFlowSchema = z.object({
+  tokenUrl: z.string().url(),
+  refreshUrl: z.string().url().optional(),
+  scopes: OAuthScopesSchema,
+});
+export type PasswordOAuthFlow = z.infer<typeof PasswordOAuthFlowSchema>;
+
+export const OAuthFlowsSchema = z.object({
+  authorizationCode: AuthorizationCodeOAuthFlowSchema.optional(),
+  clientCredentials: ClientCredentialsOAuthFlowSchema.optional(),
+  implicit: ImplicitOAuthFlowSchema.optional(),
+  password: PasswordOAuthFlowSchema.optional(),
+});
+export type OAuthFlows = z.infer<typeof OAuthFlowsSchema>;
+
 export const OAuth2SecuritySchemeSchema = z.object({
-  scheme: z.literal('oauth2'),
+  type: z.literal('oauth2'),
   description: z.string().optional(),
-  flows: z.record(z.unknown()),
-  authorizationEndpoint: z.string().url().optional(),
-  tokenEndpoint: z.string().url().optional(),
-  scopes: z.record(z.string()).optional(),
+  flows: OAuthFlowsSchema,
+  oauth2MetadataUrl: z.string().url().optional(),
 });
 export type OAuth2SecurityScheme = z.infer<typeof OAuth2SecuritySchemeSchema>;
 
 export const OpenIdConnectSecuritySchemeSchema = z.object({
-  scheme: z.literal('openIdConnect'),
+  type: z.literal('openIdConnect'),
   description: z.string().optional(),
   openIdConnectUrl: z.string().url(),
-  scopes: z.record(z.string()).optional(),
 });
 export type OpenIdConnectSecurityScheme = z.infer<typeof OpenIdConnectSecuritySchemeSchema>;
 
-export const SecuritySchemeSchema = z.union([
+export const SecuritySchemeSchema = z.discriminatedUnion('type', [
   ApiKeySecuritySchemeSchema,
   HttpSecuritySchemeSchema,
   OAuth2SecuritySchemeSchema,
