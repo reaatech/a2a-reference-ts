@@ -4,42 +4,38 @@
 
 ## Overview
 
-This monorepo implements Google's Agent-to-Agent (A2A) protocol in TypeScript with an enterprise-grade A2A↔MCP bridge adapter.
+This monorepo implements Google's Agent-to-Agent (A2A) protocol in TypeScript with an enterprise-grade A2A↔MCP bridge adapter, CLI scaffolding, and production infrastructure.
 
 ## Package Boundaries
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        A2A Server                           │
+│                      A2A Server (Express + Hono)             │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │  Express    │  │    Hono     │  │   AgentExecutor     │  │
-│  │  Adapter    │  │   Adapter   │  │   (user logic)      │  │
+│  │ Agent Card  │  │   JSON-RPC  │  │   AgentExecutor     │  │
+│  │  / Health   │  │  / SSE / PN │  │   (user logic)      │  │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      A2A Client SDK                         │
-│         (discovery, task lifecycle, streaming)              │
-└─────────────────────────────────────────────────────────────┘
-                              │
-              ┌───────────────┼───────────────┐
-              ▼               ▼               ▼
-        ┌─────────┐    ┌──────────┐    ┌──────────┐
-        │  Auth   │    │Persistence│   │Observability│
-        └─────────┘    └──────────┘    └──────────┘
-                              │
-                              ▼
+       │           │           │
+       ▼           ▼           ▼
+┌─────────┐ ┌──────────┐ ┌──────────┐
+│  Auth    │ │Persistence│ │Observability│
+│ OAuth2   │ │InMemory   │ │ Pino     │
+│ JWT      │ │Redis      │ │ OTel     │
+│ API Key  │ │Postgres   │ │ Metrics  │
+│          │ │FileSystem │ │          │
+└─────────┘ └──────────┘ └──────────┘
+       │
+       ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                    A2A ↔ MCP Bridge                         │
-│           (bidirectional protocol adapter)                  │
+│   McpToolAdapter (A2A→MCP) + A2aAsMcpServer (MCP→A2A)      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Data Flow
 
 ### Sync Task (JSON-RPC)
-
 ```
 Client ──POST /──► Server ──► AgentExecutor ──► TaskStore
                      │                            │
@@ -47,23 +43,34 @@ Client ──POST /──► Server ──► AgentExecutor ──► TaskStore
 ```
 
 ### Streaming Task (SSE)
-
 ```
-Client ──POST /──► Server ──► AgentExecutor
+Client ──POST /tasks/sendSubscribe ──► Server ──► AgentExecutor
                      │
-                     ├──► SSE: TaskStatusUpdateEvent
-                     ├──► SSE: TaskArtifactUpdateEvent
-                     └──► SSE: TaskStatusUpdateEvent (completed)
+                     ├──► SSE: TaskStatusUpdateEvent (working)
+                     ├──► SSE: TaskArtifactUpdateEvent (artifact data)
+                     └──► SSE: TaskStatusUpdateEvent (completed/failed)
 ```
 
-### Bridge: A2A → MCP
-
+### Push Notifications
 ```
-A2A Task ──► BridgeAgent ──► tools/list ──► MCP Server
+Agent ──► PushNotificationManager ──► HTTP POST ──► Client Webhook
                 │
-                ├──► Map skills ◄── tools schema
-                │
-                └──► tools/call ──► MCP Server ──► Result ──► A2A Artifact
+                ├──► Bearer token auth header
+                └──► Retry with exponential backoff (3 attempts)
+```
+
+### Rate Limiting
+```
+Request ──► RateLimiter.check() ──► allowed? ──► 200 (with X-RateLimit-Remaining)
+                                      │
+                                      └──► denied? ──► 429 (with Retry-After)
+```
+
+## Health Checks
+```
+GET /healthz ──► createHealthStatus() ──► Check task store
+                  │                         ├── Custom health checks
+                  └──► JSON: { status: "ok", checks: [...] }
 ```
 
 ## State Machine
@@ -74,29 +81,30 @@ A2A Task ──► BridgeAgent ──► tools/list ──► MCP Server
          │          └────┬─────┘         │
          │               │               │
          │               ▼               │
-         │          ┌─────────┐         │
-         │    ┌────►│ working │────┐    │
-         │    │     └────┬────┘    │    │
-         │    │          │         │    │
-         │    │          ▼         │    │
-         │    │   ┌─────────────┐  │    │
-         │    └───│ input-required│──┘    │
+         │          ┌─────────┐          │
+         │    ┌────►│ working │────┐     │
+         │    │     └────┬────┘    │     │
+         │    │          │         │     │
+         │    │          ▼         │     │
+         │    │   ┌─────────────┐  │     │
+         │    └───│input-required│──┘     │
          │        └──────┬──────┘         │
+         │               │                │
+         │          ┌────▼─────┐          │
+         │          │auth-required        │
+         │          └────┬─────┘          │
          │               │                │
          │               ▼                │
          │      ┌─────────────────┐      │
-         └──────│ completed/failed │──────┘
-                │  /canceled/rejected │
+         └──────│ completed/failed│──────┘
+                │ /canceled/rejected │
                 └─────────────────┘
 ```
 
-## Technology Choices
-
-See [DEV_PLAN.md](./DEV_PLAN.md) Section 2.2 for the full technology stack rationale.
-
 ## Extension Points
 
-- **AuthStrategy** — implement custom auth schemes
-- **TaskStore** — add new persistence backends
-- **AgentExecutor** — implement agent logic
-- **TransportAdapter** — add new HTTP frameworks
+- **AuthStrategy** — implement custom auth schemes (OAuth2, JWT, API key)
+- **TaskStore** — add new persistence backends (InMemory, Redis, Postgres, FileSystem)
+- **AgentExecutor** — implement agent business logic
+- **TelemetryProvider** — plug in OpenTelemetry or custom observability
+- **RateLimiter** — custom key functions and window strategies

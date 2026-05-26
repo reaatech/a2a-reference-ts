@@ -96,6 +96,7 @@ export class FileSystemTaskStore implements TaskStore {
   async list(options?: {
     contextId?: string;
     status?: string;
+    principal?: string;
     pageSize?: number;
     pageToken?: string;
     historyLength?: number;
@@ -106,6 +107,9 @@ export class FileSystemTaskStore implements TaskStore {
     }
     if (options?.status) {
       tasks = tasks.filter((t) => t.status.state === options.status);
+    }
+    if (options?.principal) {
+      tasks = tasks.filter((t) => t.principal === options.principal);
     }
     tasks.sort((a, b) => {
       const aTime = a.status.timestamp ?? '';

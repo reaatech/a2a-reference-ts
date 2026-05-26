@@ -91,3 +91,18 @@ export {
   ExtensionSupportRequiredError,
   VersionNotSupportedError,
 } from './types/errors.js';
+
+// Signatures
+export {
+  AgentCardSignatureSchema,
+  MutualTlsSecuritySchemeSchema,
+  verifyAgentCardSignature,
+  verifyAgentCardSignatures,
+  canonicalizeAgentCard,
+  AgentCardSignatureError,
+} from './types/signature.js';
+export type {
+  AgentCardSignature,
+  MutualTlsSecurityScheme,
+  VerifyAgentCardSignatureOptions,
+} from './types/signature.js';

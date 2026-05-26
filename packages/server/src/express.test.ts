@@ -4,6 +4,7 @@ import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import type { AgentExecutor, ExecutionContext, ExecutionEventBus } from './executor.js';
 import { createA2AExpressApp } from './express.js';
+import { RateLimiter } from './rate-limiter.js';
 
 const testAgentCard = {
   name: 'Echo Agent',
@@ -419,5 +420,508 @@ describe('createA2AExpressApp', () => {
     // The request should eventually complete (or error) after shutdown
     const res = await sseReq;
     expect(res.status).toBe(200);
+  });
+
+  describe('health check endpoints', () => {
+    it('GET /healthz returns 200 with ok status', async () => {
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: echoExecutor });
+      const res = await request(app).get('/healthz');
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe('ok');
+    });
+
+    it('GET /readyz returns 200 when healthy', async () => {
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: echoExecutor });
+      const res = await request(app).get('/readyz');
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe('ok');
+    });
+
+    it('health endpoint includes version and uptime', async () => {
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: echoExecutor });
+      const res = await request(app).get('/healthz');
+      expect(res.body.version).toBe('1.0.0');
+      expect(typeof res.body.uptime).toBe('number');
+      expect(res.body.timestamp).toBeDefined();
+    });
+  });
+
+  describe('rate limiting', () => {
+    it('requests under limit succeed', async () => {
+      const limiter = new RateLimiter({ windowMs: 60000, maxRequests: 10 });
+      const app = createA2AExpressApp({
+        agentCard: testAgentCard,
+        executor: echoExecutor,
+        rateLimiter: limiter,
+      });
+      const res = await request(app).get('/.well-known/agent.json');
+      expect(res.status).toBe(200);
+    });
+
+    it('requests over limit get 429', async () => {
+      const limiter = new RateLimiter({ windowMs: 60000, maxRequests: 1 });
+      const app = createA2AExpressApp({
+        agentCard: testAgentCard,
+        executor: echoExecutor,
+        rateLimiter: limiter,
+      });
+      await request(app).get('/.well-known/agent.json');
+      const res = await request(app).get('/.well-known/agent.json');
+      expect(res.status).toBe(429);
+      expect(res.body.error).toBe('Too Many Requests');
+    });
+
+    it('X-RateLimit-Remaining header is present', async () => {
+      const limiter = new RateLimiter({ windowMs: 60000, maxRequests: 10 });
+      const app = createA2AExpressApp({
+        agentCard: testAgentCard,
+        executor: echoExecutor,
+        rateLimiter: limiter,
+      });
+      const res = await request(app).get('/.well-known/agent.json');
+      expect(res.headers['x-ratelimit-remaining']).toBeDefined();
+      expect(Number(res.headers['x-ratelimit-remaining'])).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe('extended agent card', () => {
+    it('GET /.well-known/agent-card/extended returns extended card when configured', async () => {
+      const app = createA2AExpressApp({
+        agentCard: testAgentCard,
+        executor: echoExecutor,
+        extendedAgentCard: { description: 'extended info', customField: 'value' },
+      });
+      const res = await request(app).get('/.well-known/agent-card/extended');
+      expect(res.status).toBe(200);
+      expect(res.body.description).toBe('extended info');
+      expect(res.body.customField).toBe('value');
+    });
+
+    it('GET /.well-known/agent-card/extended returns 404 when not configured', async () => {
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: echoExecutor });
+      const res = await request(app).get('/.well-known/agent-card/extended');
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBe('Extended agent card not configured');
+    });
+  });
+
+  describe('push notification RPCs', () => {
+    const pushAgentCard = {
+      ...testAgentCard,
+      name: 'Push Agent',
+      capabilities: { ...testAgentCard.capabilities, pushNotifications: true },
+    };
+
+    it('tasks/pushNotification/set registers config', async () => {
+      const app = createA2AExpressApp({ agentCard: pushAgentCard, executor: echoExecutor });
+      const res = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/pushNotification/set',
+          params: { id: 'cfg-1', taskId: 'task-1', url: 'https://example.com/callback' },
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.result.ok).toBe(true);
+      expect(res.body.result.id).toBe('cfg-1');
+    });
+
+    it('tasks/pushNotification/get returns config', async () => {
+      const app = createA2AExpressApp({ agentCard: pushAgentCard, executor: echoExecutor });
+      await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/pushNotification/set',
+          params: { id: 'cfg-2', taskId: 'task-2', url: 'https://example.com/callback' },
+        });
+      const res = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 2,
+          method: 'tasks/pushNotification/get',
+          params: { taskId: 'task-2' },
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.result.taskId).toBe('task-2');
+      expect(res.body.result.url).toBe('https://example.com/callback');
+    });
+
+    it('tasks/pushNotification/list returns configs', async () => {
+      const app = createA2AExpressApp({ agentCard: pushAgentCard, executor: echoExecutor });
+      await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/pushNotification/set',
+          params: { id: 'cfg-3', taskId: 'task-3', url: 'https://example.com/callback' },
+        });
+      const res = await request(app).post('/').send({
+        jsonrpc: '2.0',
+        id: 2,
+        method: 'tasks/pushNotification/list',
+        params: {},
+      });
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.result.configs)).toBe(true);
+      expect(res.body.result.configs).toHaveLength(1);
+    });
+
+    it('tasks/pushNotification/delete removes config', async () => {
+      const app = createA2AExpressApp({ agentCard: pushAgentCard, executor: echoExecutor });
+      await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/pushNotification/set',
+          params: { id: 'cfg-4', taskId: 'task-4', url: 'https://example.com/callback' },
+        });
+      await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 2,
+          method: 'tasks/pushNotification/delete',
+          params: { taskId: 'task-4' },
+        });
+      const getRes = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 3,
+          method: 'tasks/pushNotification/get',
+          params: { taskId: 'task-4' },
+        });
+      expect(getRes.status).toBe(200);
+      expect(getRes.body.error).toBeDefined();
+      expect(getRes.body.error.message).toContain('not found');
+    });
+  });
+
+  describe('SSE endpoint executor behavior', () => {
+    it('handles executor failure in SSE endpoint', async () => {
+      const throwingExecutor: AgentExecutor = {
+        async execute() {
+          throw new Error('SSE failed');
+        },
+      };
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: throwingExecutor });
+      const res = await request(app)
+        .post('/tasks/sendSubscribe')
+        .send({
+          message: {
+            messageId: 'msg-1',
+            role: 'user',
+            parts: [{ kind: 'text', text: 'Hello' }],
+          },
+        })
+        .buffer(true)
+        .parse((res, callback) => {
+          res.setEncoding('utf8');
+          let data = '';
+          res.on('data', (chunk: string) => {
+            data += chunk;
+          });
+          res.on('end', () => {
+            callback(null, data);
+          });
+        });
+
+      expect(res.status).toBe(200);
+      const body = res.body as string;
+      expect(body).toContain('"kind":"task"');
+      expect(body).toContain('"state":"failed"');
+      expect(body).toContain('"final":true');
+    });
+
+    it('auto-completes task when executor does not set final state in SSE', async () => {
+      const noFinalStateExecutor: AgentExecutor = {
+        async execute(_ctx: ExecutionContext, eventBus: ExecutionEventBus) {
+          await eventBus.emitStatusUpdate({ kind: 'status', status: { state: 'working' } });
+        },
+      };
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: noFinalStateExecutor });
+      const res = await request(app)
+        .post('/tasks/sendSubscribe')
+        .send({
+          message: {
+            messageId: 'msg-1',
+            role: 'user',
+            parts: [{ kind: 'text', text: 'Hello' }],
+          },
+        })
+        .buffer(true)
+        .parse((res, callback) => {
+          res.setEncoding('utf8');
+          let data = '';
+          res.on('data', (chunk: string) => {
+            data += chunk;
+          });
+          res.on('end', () => {
+            callback(null, data);
+          });
+        });
+
+      expect(res.status).toBe(200);
+      const body = res.body as string;
+      expect(body).toContain('"state":"completed"');
+      expect(body).toContain('"final":true');
+    });
+  });
+
+  describe('tasks/send auto-complete transition', () => {
+    it('transitions to completed when executor does not set final state', async () => {
+      const noFinalStateExecutor: AgentExecutor = {
+        async execute(_ctx: ExecutionContext, eventBus: ExecutionEventBus) {
+          await eventBus.emitStatusUpdate({ kind: 'status', status: { state: 'working' } });
+        },
+      };
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: noFinalStateExecutor });
+
+      const sendRes = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/send',
+          params: {
+            message: {
+              messageId: 'msg-1',
+              role: 'user',
+              parts: [{ kind: 'text', text: 'Hello' }],
+            },
+          },
+        });
+      expect(sendRes.body.result.status.state).toBe('submitted');
+
+      await new Promise((r) => setTimeout(r, 100));
+
+      const getRes = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 2,
+          method: 'tasks/get',
+          params: { id: sendRes.body.result.id },
+        });
+      expect(getRes.body.result.status.state).toBe('completed');
+    });
+  });
+
+  describe('executor.cancelTask', () => {
+    it('calls executor.cancelTask when available in tasks/cancel', async () => {
+      let cancelCalled = false;
+      const cancelableExecutor: AgentExecutor = {
+        async execute(_ctx: ExecutionContext, _bus: ExecutionEventBus) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        },
+        async cancelTask(_taskId: string, _bus: ExecutionEventBus) {
+          cancelCalled = true;
+        },
+      };
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: cancelableExecutor });
+
+      const sendRes = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/send',
+          params: {
+            message: {
+              messageId: 'msg-1',
+              role: 'user',
+              parts: [{ kind: 'text', text: 'Hello' }],
+            },
+          },
+        });
+      const taskId = sendRes.body.result.id;
+
+      await new Promise((r) => setTimeout(r, 10));
+
+      await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 2,
+          method: 'tasks/cancel',
+          params: { id: taskId },
+        });
+      expect(cancelCalled).toBe(true);
+    });
+  });
+
+  describe('JSON-RPC tasks/sendSubscribe', () => {
+    it('handles tasks/sendSubscribe via JSON-RPC', async () => {
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: echoExecutor });
+      const res = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/sendSubscribe',
+          params: {
+            message: {
+              messageId: 'msg-1',
+              role: 'user',
+              parts: [{ kind: 'text', text: 'Hello' }],
+            },
+          },
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.result.id).toBeDefined();
+      expect(res.body.result.status.state).toBe('submitted');
+    });
+
+    it('handles executor failure in tasks/sendSubscribe RPC', async () => {
+      const throwingExecutor: AgentExecutor = {
+        async execute() {
+          throw new Error('RPC sendSubscribe failed');
+        },
+      };
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: throwingExecutor });
+      const res = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/sendSubscribe',
+          params: {
+            message: {
+              messageId: 'msg-1',
+              role: 'user',
+              parts: [{ kind: 'text', text: 'Hello' }],
+            },
+          },
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.result.id).toBeDefined();
+      expect(res.body.result.status.state).toBe('submitted');
+    });
+  });
+
+  describe('push notification not-supported', () => {
+    it('tasks/pushNotification/set throws when not supported', async () => {
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: echoExecutor });
+      const res = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/pushNotification/set',
+          params: { id: 'cfg-1', taskId: 'task-1', url: 'https://example.com/callback' },
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.error).toBeDefined();
+      expect(res.body.error.message).toContain('not supported');
+    });
+
+    it('tasks/pushNotification/get throws when not supported', async () => {
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: echoExecutor });
+      const res = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/pushNotification/get',
+          params: { taskId: 'task-1' },
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.error).toBeDefined();
+      expect(res.body.error.message).toContain('not supported');
+    });
+
+    it('tasks/pushNotification/list throws when not supported', async () => {
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: echoExecutor });
+      const res = await request(app).post('/').send({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tasks/pushNotification/list',
+        params: {},
+      });
+      expect(res.status).toBe(200);
+      expect(res.body.error).toBeDefined();
+      expect(res.body.error.message).toContain('not supported');
+    });
+
+    it('tasks/pushNotification/delete throws when not supported', async () => {
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: echoExecutor });
+      const res = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/pushNotification/delete',
+          params: { taskId: 'task-1' },
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.error).toBeDefined();
+      expect(res.body.error.message).toContain('not supported');
+    });
+  });
+
+  describe('JSON-RPC tasks/sendSubscribe auto-complete', () => {
+    it('transitions to completed when executor does not set final state in RPC', async () => {
+      const noFinalStateExecutor: AgentExecutor = {
+        async execute(_ctx: ExecutionContext, eventBus: ExecutionEventBus) {
+          await eventBus.emitStatusUpdate({ kind: 'status', status: { state: 'working' } });
+        },
+      };
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: noFinalStateExecutor });
+
+      const res = await request(app)
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tasks/sendSubscribe',
+          params: {
+            message: {
+              messageId: 'msg-1',
+              role: 'user',
+              parts: [{ kind: 'text', text: 'Hello' }],
+            },
+          },
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.result.id).toBeDefined();
+      expect(res.body.result.status.state).toBe('submitted');
+    });
+  });
+
+  describe('extended agent card RPC', () => {
+    it('tasks/extendedAgentCard returns extended card when configured', async () => {
+      const app = createA2AExpressApp({
+        agentCard: testAgentCard,
+        executor: echoExecutor,
+        extendedAgentCard: { description: 'extended info' },
+      });
+      const res = await request(app).post('/').send({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tasks/extendedAgentCard',
+        params: {},
+      });
+      expect(res.status).toBe(200);
+      expect(res.body.result.description).toBe('extended info');
+    });
+
+    it('tasks/extendedAgentCard throws when not configured', async () => {
+      const app = createA2AExpressApp({ agentCard: testAgentCard, executor: echoExecutor });
+      const res = await request(app).post('/').send({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tasks/extendedAgentCard',
+        params: {},
+      });
+      expect(res.status).toBe(200);
+      expect(res.body.error).toBeDefined();
+      expect(res.body.error.message).toContain('not configured');
+    });
   });
 });

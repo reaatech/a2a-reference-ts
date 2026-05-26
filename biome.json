@@ -3,6 +3,18 @@
   "files": {
     "ignore": ["dist", ".turbo", "node_modules", "coverage"]
   },
+  "overrides": [
+    {
+      "include": ["*.test.ts", "*.test.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ],
   "organizeImports": {
     "enabled": true
   },

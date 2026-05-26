@@ -12,6 +12,8 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
+    "docs": "typedoc",
+    "docs:serve": "typedoc --watch",
     "clean": "turbo run clean && rm -rf node_modules",
     "changeset": "changeset",
     "version-packages": "changeset version",

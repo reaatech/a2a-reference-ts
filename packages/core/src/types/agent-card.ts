@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AgentCardSignatureSchema, MutualTlsSecuritySchemeSchema } from './signature.js';
 
 export const CapabilitySchema = z.object({
   streaming: z.boolean().optional(),
@@ -48,6 +49,7 @@ export const SecuritySchemeSchema = z.union([
   HttpSecuritySchemeSchema,
   OAuth2SecuritySchemeSchema,
   OpenIdConnectSecuritySchemeSchema,
+  MutualTlsSecuritySchemeSchema,
 ]);
 export type SecurityScheme = z.infer<typeof SecuritySchemeSchema>;
 
@@ -97,7 +99,7 @@ export const AgentCardSchema = z.object({
   defaultInputModes: z.array(z.string()),
   defaultOutputModes: z.array(z.string()),
   skills: z.array(SkillSchema),
-  signatures: z.array(z.unknown()).optional(),
+  signatures: z.array(AgentCardSignatureSchema).optional(),
   iconUrl: z.string().url().optional(),
   supportedInterfaces: z.array(AgentInterfaceSchema),
   extensions: z.array(z.unknown()).optional(),
