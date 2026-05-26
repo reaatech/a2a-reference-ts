@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/a2a-reference-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Canonical A2A protocol types, schemas, and validation",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
@@ -24,7 +24,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
