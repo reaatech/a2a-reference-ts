@@ -35,13 +35,21 @@ All errors extend `A2AError` with typed error codes:
 
 ## Signature Verification
 
+Signatures are JSON Web Signatures (JWS, RFC 7515) computed over the RFC 8785
+(JCS) canonicalization of the Agent Card with its `signatures` field excluded.
+Provide a trusted verification key, or set `allowRemoteKeys: true` to fetch the
+JWKS from the protected header's `jku` URL.
+
 ```ts
 import { verifyAgentCardSignatures, type AgentCardSignature } from '@reaatech/a2a-reference-core';
 
-const result = await verifyAgentCardSignatures(agentCard, signatures);
+const result = await verifyAgentCardSignatures(agentCard, signatures, {
+  key: trustedPublicKeyPem, // PEM SPKI/X.509 string, CryptoKey, or a JWKS resolver
+});
 if (!result.valid) {
   console.error('Invalid signatures:', result.errors);
 }
 ```
 
-Supports RS256, RS384, RS512, ES256, ES384, ES512, and Ed25519 algorithms with JWK URL fetching.
+Supports RS256/384/512, PS256/384/512, ES256/384/512, and EdDSA (Ed25519);
+verification runs on `jose` (WebCrypto), so it works in Node.js and edge runtimes.

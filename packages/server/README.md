@@ -104,6 +104,7 @@ const app = createA2AExpressApp({
 | `pushNotificationManager` | `PushNotificationManager` | auto | Webhook delivery |
 | `healthChecks` | `HealthCheck[]` | none | Custom health probes |
 | `version` | `string` | agentCard.version | Version for health endpoint |
+| `trustProxyHeaders` | `boolean` | `false` | Derive the rate-limit client IP from `X-Forwarded-For` (only enable behind a trusted proxy) |
 
 ## Endpoints
 

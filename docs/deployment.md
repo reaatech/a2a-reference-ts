@@ -65,7 +65,20 @@ const app = createA2AExpressApp({
 });
 ```
 
-Rate-limited requests receive a `429 Too Many Requests` response with a `Retry-After` header and `X-RateLimit-Remaining` header.
+Rate-limited requests receive a `429 Too Many Requests` response with a `Retry-After` header (seconds) and an `X-RateLimit-Remaining` header.
+
+By default the client IP is taken from the socket peer address. When running behind a trusted load balancer or reverse proxy, set `trustProxyHeaders: true` so the limiter keys off `X-Forwarded-For` instead:
+
+```ts
+const app = createA2AExpressApp({
+  agentCard,
+  executor,
+  rateLimiter: new RateLimiter({ windowMs: 60_000, maxRequests: 100 }),
+  trustProxyHeaders: true, // only enable behind a proxy that overwrites X-Forwarded-For
+});
+```
+
+Do not enable this when the server is directly reachable — clients could spoof the header to evade or poison rate limits.
 
 ### Push Notifications
 
