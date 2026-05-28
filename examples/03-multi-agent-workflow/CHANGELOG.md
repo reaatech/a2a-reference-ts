@@ -1,5 +1,14 @@
 # @reaatech/a2a-reference-example-multi-agent-workflow
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [[`45a5c40`](https://github.com/reaatech/a2a-reference-ts/commit/45a5c40463cd129ff40141d6595ce39b107db677)]:
+  - @reaatech/a2a-reference-client@0.1.2
+  - @reaatech/a2a-reference-core@0.2.1
+  - @reaatech/a2a-reference-server@0.2.1
+
 ## 0.1.2
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/a2a-reference-observability",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Structured logging, tracing, and metrics for A2A agents",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
@@ -24,7 +24,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },

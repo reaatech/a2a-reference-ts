@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/a2a-reference-client",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A2A client SDK for discovery and task management",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
@@ -24,7 +24,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },

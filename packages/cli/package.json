@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/a2a-reference-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "CLI scaffolding tool for A2A agents",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
@@ -27,7 +27,9 @@
   "bin": {
     "a2a": "./dist/index.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },

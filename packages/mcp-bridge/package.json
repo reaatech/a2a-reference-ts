@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/a2a-reference-mcp-bridge",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A2A ↔ MCP bidirectional protocol adapter",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
@@ -24,7 +24,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
