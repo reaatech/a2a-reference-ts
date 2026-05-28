@@ -61,18 +61,27 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: 'true'
 
+      # Optional mirror of the published packages to GitHub Packages. This is a
+      # best-effort convenience: the npm release above is the source of truth,
+      # so a mirror hiccup must never fail the release job (continue-on-error).
       - name: Mirror published packages to GitHub Packages
         if: steps.changesets.outputs.published == 'true'
+        continue-on-error: true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
         run: |
-          cat > .npmrc <<EOF
+          # Use a dedicated npmrc and point npm at it explicitly. setup-node sets
+          # NPM_CONFIG_USERCONFIG to its own npmjs npmrc, which would otherwise
+          # shadow these GitHub Packages credentials and cause ENEEDAUTH.
+          export NPM_CONFIG_USERCONFIG="$RUNNER_TEMP/.npmrc-ghp"
+          cat > "$NPM_CONFIG_USERCONFIG" <<EOF
           @reaatech:registry=https://npm.pkg.github.com
           //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
           EOF
           echo "$PUBLISHED_PACKAGES" | jq -r '.[].name' | while read -r name; do
             dir="packages/${name#@reaatech/a2a-reference-}"
             echo "Mirroring $name -> $dir"
-            (cd "$dir" && npm publish --registry=https://npm.pkg.github.com)
+            (cd "$dir" && npm publish --registry=https://npm.pkg.github.com) \
+              || echo "::warning::failed to mirror $name to GitHub Packages"
           done
