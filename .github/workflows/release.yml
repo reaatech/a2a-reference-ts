@@ -35,7 +35,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -43,7 +42,7 @@ jobs:
       - name: Build packages
         run: pnpm build
 
-      - name: Create release PR or publish to npm
+      - name: Create release PR or publish packages
         id: changesets
         uses: changesets/action@v1
         with:
@@ -53,21 +52,4 @@ jobs:
           title: 'chore(release): version packages'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: 'true'
-
-      - name: Mirror published packages to GitHub Packages
-        if: steps.changesets.outputs.published == 'true'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
-        run: |
-          cat > .npmrc <<EOF
-          @reaatech:registry=https://npm.pkg.github.com
-          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-          EOF
-          echo "$PUBLISHED_PACKAGES" | jq -r '.[].name' | while read -r name; do
-            dir="packages/${name#@reaatech/a2a-reference-}"
-            echo "Mirroring $name -> $dir"
-            (cd "$dir" && npm publish --registry=https://npm.pkg.github.com)
-          done
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}

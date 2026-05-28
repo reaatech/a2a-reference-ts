@@ -17,7 +17,7 @@
     "clean": "turbo run clean && rm -rf node_modules",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo run build && changeset publish"
+    "release": "printf 'registry=https://npm.pkg.github.com\\n//npm.pkg.github.com/:_authToken=%s\\n' \"$NPM_TOKEN\" > .npmrc && turbo run build && changeset publish"
   },
   "keywords": [
     "a2a",
