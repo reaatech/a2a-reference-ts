@@ -42,43 +42,56 @@ const mockServerState = vi.hoisted(() => ({
 
 // Mock the A2AClient
 vi.mock('@reaatech/a2a-reference-client', () => ({
-  A2AClient: vi.fn().mockImplementation(() => ({
-    getAgentCard: vi.fn().mockImplementation(() => Promise.resolve(mockA2AState.agentCard)),
-    sendMessage: vi.fn().mockImplementation(() => Promise.resolve(mockA2AState.sendMessageResult)),
-    getTask: vi.fn().mockImplementation(() => Promise.resolve(mockA2AState.getTaskResult)),
-    subscribe: vi.fn().mockImplementation(async function* () {
-      for (const event of mockA2AState.subscribeEvents) {
-        yield event;
-      }
-    }),
-  })),
+  // biome-ignore lint/complexity/useArrowFunction: vitest 4 requires function expression for constructor compat
+  A2AClient: vi.fn().mockImplementation(function () {
+    return {
+      getAgentCard: vi.fn().mockImplementation(() => Promise.resolve(mockA2AState.agentCard)),
+      sendMessage: vi
+        .fn()
+        .mockImplementation(() => Promise.resolve(mockA2AState.sendMessageResult)),
+      getTask: vi.fn().mockImplementation(() => Promise.resolve(mockA2AState.getTaskResult)),
+      subscribe: vi.fn().mockImplementation(async function* () {
+        for (const event of mockA2AState.subscribeEvents) {
+          yield event;
+        }
+      }),
+    };
+  }),
 }));
 
 // Mock MCP SDK Server
 vi.mock('@modelcontextprotocol/sdk/server/index.js', () => ({
-  Server: vi.fn().mockImplementation(() => ({
-    setRequestHandler: vi
-      .fn()
-      .mockImplementation((schema: unknown, handler: (req: unknown) => Promise<unknown>) => {
-        const key =
-          schema === ListToolsRequestSchema
-            ? 'listTools'
-            : schema === CallToolRequestSchema
-              ? 'callTool'
-              : 'unknown';
-        mockHandlers.set(key, handler);
+  // biome-ignore lint/complexity/useArrowFunction: vitest 4 requires function expression for constructor compat
+  Server: vi.fn().mockImplementation(function () {
+    return {
+      setRequestHandler: vi
+        .fn()
+        .mockImplementation((schema: unknown, handler: (req: unknown) => Promise<unknown>) => {
+          const key =
+            schema === ListToolsRequestSchema
+              ? 'listTools'
+              : schema === CallToolRequestSchema
+                ? 'callTool'
+                : 'unknown';
+          mockHandlers.set(key, handler);
+        }),
+      connect: vi.fn().mockResolvedValue(undefined),
+      close: vi.fn().mockResolvedValue(undefined),
+      getClientCapabilities: vi.fn().mockImplementation(() => mockServerState.clientCapabilities),
+      createMessage: vi.fn().mockImplementation(async () => {
+        const result = mockServerState.createMessageResult;
+        if (result instanceof Error) throw result;
+        return result;
       }),
-    connect: vi.fn().mockResolvedValue(undefined),
-    close: vi.fn().mockResolvedValue(undefined),
-    getClientCapabilities: vi.fn().mockImplementation(() => mockServerState.clientCapabilities),
-    createMessage: vi
-      .fn()
-      .mockImplementation(() => Promise.resolve(mockServerState.createMessageResult)),
-  })),
+    };
+  }),
 }));
 
 vi.mock('@modelcontextprotocol/sdk/server/stdio.js', () => ({
-  StdioServerTransport: vi.fn().mockImplementation(() => ({})),
+  // biome-ignore lint/complexity/useArrowFunction: vitest 4 requires function expression for constructor compat
+  StdioServerTransport: vi.fn().mockImplementation(function () {
+    return {};
+  }),
 }));
 
 // Mock global fetch for sendTaskMessage
@@ -531,7 +544,7 @@ describe('A2aAsMcpServer', () => {
       artifacts: [],
     };
     mockServerState.clientCapabilities = { sampling: {} };
-    mockServerState.createMessageResult = Promise.reject(new Error('Sampling failed'));
+    mockServerState.createMessageResult = new Error('Sampling failed');
 
     const server = new A2aAsMcpServer({ a2aAgentUrl: 'http://localhost:3000' });
     await server.initialize();

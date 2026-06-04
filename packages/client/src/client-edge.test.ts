@@ -34,7 +34,7 @@ const testAgentCard = {
 const slowExecutor: AgentExecutor = {
   async execute(_ctx: ExecutionContext, bus: ExecutionEventBus) {
     bus.emitStatusUpdate({ kind: 'status', status: { state: 'working' } });
-    await new Promise((r) => setTimeout(r, 50));
+    await new Promise((r) => setTimeout(r, 500));
     bus.emitArtifactUpdate({
       kind: 'artifact',
       artifact: { parts: [{ kind: 'text', text: 'Done' }] },
