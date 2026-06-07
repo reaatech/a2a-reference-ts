@@ -3,7 +3,10 @@ import type { AgentCard, Skill } from '@reaatech/a2a-reference-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { A2aAsMcpServer } from './a2a-to-mcp.js';
 
-const mockHandlers = new Map<string, (request: unknown) => Promise<unknown>>();
+const mockHandlers = new Map<
+  string,
+  (request: Record<string, unknown>) => Promise<Record<string, unknown>>
+>();
 
 // Mutable mock state for A2AClient
 const mockA2AState = vi.hoisted(() => ({
@@ -21,23 +24,19 @@ const mockA2AState = vi.hoisted(() => ({
       { url: 'http://localhost:3000', protocolBinding: 'a2a', protocolVersion: '0.3.0' },
     ],
   } as AgentCard,
-  sendMessageResult: { id: 'task-1', status: { state: 'submitted' } } as unknown,
+  sendMessageResult: { id: 'task-1', status: { state: 'submitted' } } as Record<string, unknown>,
   getTaskResult: {
     id: 'task-1',
     status: { state: 'completed' },
     artifacts: [{ name: 'result', parts: [{ kind: 'text', text: '42' }] }],
-  } as unknown,
+  } as Record<string, unknown>,
   subscribeEvents: [] as Array<unknown>,
 }));
 
 // Mutable mock state for MCP Server
 const mockServerState = vi.hoisted(() => ({
-  clientCapabilities: undefined as { sampling?: unknown } | undefined,
-  createMessageResult: {
-    model: 'test-model',
-    role: 'assistant',
-    content: { type: 'text', text: 'User input' },
-  } as unknown,
+  clientCapabilities: undefined as { sampling?: Record<string, unknown> } | undefined,
+  createMessageResult: undefined as Record<string, unknown> | Promise<never> | undefined,
 }));
 
 // Mock the A2AClient
@@ -59,15 +58,20 @@ vi.mock('@modelcontextprotocol/sdk/server/index.js', () => ({
   Server: vi.fn().mockImplementation(() => ({
     setRequestHandler: vi
       .fn()
-      .mockImplementation((schema: unknown, handler: (req: unknown) => Promise<unknown>) => {
-        const key =
-          schema === ListToolsRequestSchema
-            ? 'listTools'
-            : schema === CallToolRequestSchema
-              ? 'callTool'
-              : 'unknown';
-        mockHandlers.set(key, handler);
-      }),
+      .mockImplementation(
+        (
+          schema: unknown,
+          handler: (req: Record<string, unknown>) => Promise<Record<string, unknown>>,
+        ) => {
+          const key =
+            schema === ListToolsRequestSchema
+              ? 'listTools'
+              : schema === CallToolRequestSchema
+                ? 'callTool'
+                : 'unknown';
+          mockHandlers.set(key, handler);
+        },
+      ),
     connect: vi.fn().mockResolvedValue(undefined),
     close: vi.fn().mockResolvedValue(undefined),
     getClientCapabilities: vi.fn().mockImplementation(() => mockServerState.clientCapabilities),
@@ -155,7 +159,9 @@ describe('A2aAsMcpServer', () => {
     await server.initialize();
     const listHandler = mockHandlers.get('listTools');
     if (!listHandler) throw new Error('Missing listTools handler');
-    const result = (await listHandler({} as never)) as { tools: Array<{ inputSchema: unknown }> };
+    const result = (await listHandler({} as never)) as {
+      tools: Array<{ inputSchema: Record<string, unknown> | undefined }>;
+    };
     expect(result.tools[0].inputSchema).toEqual({
       type: 'object',
       properties: { expression: { type: 'string' } },
@@ -170,7 +176,9 @@ describe('A2aAsMcpServer', () => {
     await server.initialize();
     const listHandler = mockHandlers.get('listTools');
     if (!listHandler) throw new Error('Missing listTools handler');
-    const result = (await listHandler({} as never)) as { tools: Array<{ inputSchema: unknown }> };
+    const result = (await listHandler({} as never)) as {
+      tools: Array<{ inputSchema: Record<string, unknown> | undefined }>;
+    };
     expect(result.tools[0].inputSchema).toEqual({
       type: 'object',
       properties: {
@@ -263,7 +271,7 @@ describe('A2aAsMcpServer', () => {
       id: 'task-1',
       status: { state: 'completed' },
       artifacts: [{ name: 'result', parts: [{ kind: 'text', text: 'Hello, User' }] }],
-    } as unknown;
+    } as Record<string, unknown>;
 
     mockServerState.clientCapabilities = { sampling: {} };
 

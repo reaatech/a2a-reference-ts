@@ -24,7 +24,7 @@ beforeEach(() => {
 });
 
 function createStore() {
-  return new PostgresTaskStore({ pool: mockPool as any });
+  return new PostgresTaskStore({ pool: mockPool as unknown as import('pg').Pool });
 }
 
 function taskRow(overrides: Record<string, unknown> = {}) {
@@ -85,18 +85,32 @@ const fullTask: Task = {
 
 describe('constructor', () => {
   it('escapes schema name correctly', () => {
-    const s = new PostgresTaskStore({ pool: mockPool as any, schemaName: 'test"schema' });
-    expect((s as any).taskTable).toContain('"test""schema"');
-    expect((s as any).artifactTable).toContain('"test""schema"');
-    expect((s as any).historyTable).toContain('"test""schema"');
+    const s = new PostgresTaskStore({
+      pool: mockPool as unknown as import('pg').Pool,
+      schemaName: 'test"schema',
+    });
+    const internals = s as unknown as {
+      taskTable: string;
+      artifactTable: string;
+      historyTable: string;
+    };
+    expect(internals.taskTable).toContain('"test""schema"');
+    expect(internals.artifactTable).toContain('"test""schema"');
+    expect(internals.historyTable).toContain('"test""schema"');
   });
 
   it('uses default table prefix when not provided', () => {
-    const s = new PostgresTaskStore({ pool: mockPool as any });
-    expect((s as any).tablePrefix).toBe('a2a');
-    expect((s as any).taskTable).toContain('"a2a_tasks"');
-    expect((s as any).artifactTable).toContain('"a2a_artifacts"');
-    expect((s as any).historyTable).toContain('"a2a_history"');
+    const s = new PostgresTaskStore({ pool: mockPool as unknown as import('pg').Pool });
+    const internals = s as unknown as {
+      tablePrefix: string;
+      taskTable: string;
+      artifactTable: string;
+      historyTable: string;
+    };
+    expect(internals.tablePrefix).toBe('a2a');
+    expect(internals.taskTable).toContain('"a2a_tasks"');
+    expect(internals.artifactTable).toContain('"a2a_artifacts"');
+    expect(internals.historyTable).toContain('"a2a_history"');
   });
 });
 
@@ -216,7 +230,7 @@ describe('create', () => {
 
     await expect(createStore().create(fullTask)).rejects.toThrow('boom');
 
-    const rollbackCall = mockClient.query.mock.calls.find((c: unknown[]) => c[0] === 'ROLLBACK');
+    const rollbackCall = mockClient.query.mock.calls.find((c) => (c as [string])[0] === 'ROLLBACK');
     expect(rollbackCall).toBeDefined();
   });
 });
@@ -295,7 +309,7 @@ describe('get', () => {
     expect(result?.principal).toBeUndefined();
     expect(result?.tenantId).toBeUndefined();
     expect(result?.status.message).toBeDefined();
-    expect((result?.status.message as any).role).toBe('user');
+    expect((result?.status.message as { role: string }).role).toBe('user');
     expect(result?.metadata).toEqual({ foo: 'bar' });
   });
 
@@ -588,7 +602,7 @@ describe('addHistory', () => {
       }),
     ).rejects.toThrow('select fail');
 
-    const rollbackCall = mockClient.query.mock.calls.find((c: unknown[]) => c[0] === 'ROLLBACK');
+    const rollbackCall = mockClient.query.mock.calls.find((c) => (c as [string])[0] === 'ROLLBACK');
     expect(rollbackCall).toBeDefined();
   });
 });
@@ -641,7 +655,7 @@ describe('addArtifact', () => {
       }),
     ).rejects.toThrow('insert fail');
 
-    const rollbackCall = mockClient.query.mock.calls.find((c: unknown[]) => c[0] === 'ROLLBACK');
+    const rollbackCall = mockClient.query.mock.calls.find((c) => (c as [string])[0] === 'ROLLBACK');
     expect(rollbackCall).toBeDefined();
   });
 });
@@ -715,7 +729,7 @@ describe('rowToTask', () => {
     const result = await createStore().get('task-1');
 
     expect(result?.status.message).toBeDefined();
-    expect((result?.status.message as any).role).toBe('user');
+    expect((result?.status.message as { role: string }).role).toBe('user');
     expect(result?.metadata).toEqual({ key: 'value', nested: { a: 1 } });
     expect(result?.history?.[0].metadata).toEqual({ source: 'user' });
     expect(result?.artifacts?.[0].metadata).toEqual({ version: 2 });

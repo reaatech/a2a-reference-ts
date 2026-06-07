@@ -175,7 +175,7 @@ describe('A2AClient unit tests', () => {
       );
     const client = new A2AClient({ baseUrl: 'http://localhost:3000', fetchImpl: mockFetch });
 
-    const events: unknown[] = [];
+    const events: Array<Record<string, unknown>> = [];
     for await (const event of client.sendSubscribe({
       messageId: '1',
       role: 'user',
@@ -206,7 +206,7 @@ describe('A2AClient unit tests', () => {
       );
     const client = new A2AClient({ baseUrl: 'http://localhost:3000', fetchImpl: mockFetch });
 
-    const events: unknown[] = [];
+    const events: Array<Record<string, unknown>> = [];
     for await (const event of client.subscribe('t1')) {
       events.push(event);
     }
@@ -221,13 +221,15 @@ describe('A2AClient unit tests', () => {
     const read = vi.fn().mockRejectedValue(new Error('Stream error'));
     const mockBody = {
       getReader: () => ({ read, releaseLock }),
-    } as unknown as ReadableStream<Uint8Array>;
+    } as unknown as {
+      getReader: () => { read: ReturnType<typeof vi.fn>; releaseLock: ReturnType<typeof vi.fn> };
+    };
 
     const mockResponse = {
       ok: true,
       body: mockBody,
       headers: new Headers({ 'content-type': 'text/event-stream' }),
-    } as unknown as Response;
+    } as unknown as { ok: boolean; body: unknown; headers: Headers };
 
     const mockFetch = vi
       .fn()
@@ -310,7 +312,7 @@ describe('A2AClient unit tests', () => {
       ok: true,
       body: null,
       headers: new Headers({ 'content-type': 'text/event-stream' }),
-    } as unknown as Response;
+    } as unknown as { ok: boolean; body: null; headers: Headers };
 
     const mockFetch = vi
       .fn()
@@ -362,7 +364,7 @@ describe('A2AClient unit tests', () => {
       );
     const client = new A2AClient({ baseUrl: 'http://localhost:3000', fetchImpl: mockFetch });
 
-    const events: unknown[] = [];
+    const events: Array<Record<string, unknown>> = [];
     for await (const event of client.sendSubscribe({
       messageId: '1',
       role: 'user',
@@ -505,7 +507,7 @@ describe('A2AClient unit tests', () => {
       ok: true,
       body: null,
       headers: new Headers({ 'content-type': 'text/event-stream' }),
-    } as unknown as Response;
+    } as unknown as { ok: boolean; body: null; headers: Headers };
 
     const mockFetch = vi
       .fn()

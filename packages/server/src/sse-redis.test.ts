@@ -2,17 +2,17 @@ import { describe, expect, it, vi } from 'vitest';
 import { RedisSseCoordinator } from './sse-redis.js';
 
 function createMockRedis() {
-  const handlers = new Map<string, (...args: unknown[]) => void>();
+  const handlers = new Map<string, (...args: string[]) => void>();
   return {
     duplicate: vi.fn().mockReturnThis(),
     psubscribe: vi.fn().mockResolvedValue(undefined),
     publish: vi.fn().mockResolvedValue(1),
     punsubscribe: vi.fn().mockResolvedValue(undefined),
     quit: vi.fn().mockResolvedValue(undefined),
-    on: vi.fn((event: string, handler: (...args: unknown[]) => void) => {
+    on: vi.fn((event: string, handler: (...args: string[]) => void) => {
       handlers.set(event, handler);
     }),
-    emit: vi.fn((event: string, ...args: unknown[]) => {
+    emit: vi.fn((event: string, ...args: string[]) => {
       const h = handlers.get(event);
       if (h) h(...args);
     }),
@@ -24,7 +24,7 @@ type MockRedis = ReturnType<typeof createMockRedis>;
 describe('RedisSseCoordinator', () => {
   describe('connect', () => {
     it('creates a subscriber and subscribes to the psubject', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
         channelPrefix: 'a2a:sse',
@@ -37,7 +37,7 @@ describe('RedisSseCoordinator', () => {
     });
 
     it('does nothing if already connected', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
       });
@@ -50,7 +50,7 @@ describe('RedisSseCoordinator', () => {
     });
 
     it('deduplicates concurrent connect calls', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
       });
@@ -62,7 +62,7 @@ describe('RedisSseCoordinator', () => {
     });
 
     it('connects on init when connectOnInit is true', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       void new RedisSseCoordinator({
         redis: redis as never,
         connectOnInit: true,
@@ -77,7 +77,7 @@ describe('RedisSseCoordinator', () => {
 
   describe('subscribe / unsubscribe', () => {
     it('calls the handler when a matching message is received', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
         channelPrefix: 'a2a:sse',
@@ -93,7 +93,7 @@ describe('RedisSseCoordinator', () => {
     });
 
     it('does not call the handler for a different task', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
       });
@@ -108,7 +108,7 @@ describe('RedisSseCoordinator', () => {
     });
 
     it('does not call the handler after unsubscribe', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
       });
@@ -124,7 +124,7 @@ describe('RedisSseCoordinator', () => {
     });
 
     it('ignores malformed JSON messages', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
       });
@@ -139,7 +139,7 @@ describe('RedisSseCoordinator', () => {
     });
 
     it('ignores messages on channels without the prefix', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
       });
@@ -156,7 +156,7 @@ describe('RedisSseCoordinator', () => {
 
   describe('publish', () => {
     it('publishes JSON-stringified data to the correct channel', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
         channelPrefix: 'a2a:sse',
@@ -171,7 +171,7 @@ describe('RedisSseCoordinator', () => {
     });
 
     it('uses custom channel prefix', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
         channelPrefix: 'custom',
@@ -185,7 +185,7 @@ describe('RedisSseCoordinator', () => {
 
   describe('close', () => {
     it('unsubscribes and quits the subscriber', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
       });
@@ -198,7 +198,7 @@ describe('RedisSseCoordinator', () => {
     });
 
     it('clears all handlers', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
       });
@@ -215,7 +215,7 @@ describe('RedisSseCoordinator', () => {
     });
 
     it('is a no-op when not connected', async () => {
-      const redis = createMockRedis() as unknown as MockRedis;
+      const redis: MockRedis = createMockRedis();
       const coordinator = new RedisSseCoordinator({
         redis: redis as never,
       });

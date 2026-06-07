@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { RedisTaskStore } from './redis.js';
+import type { RedisTaskStoreOptions } from './redis.js';
 
 // Minimal mock of ioredis Redis interface
 function createMockRedis() {
@@ -93,7 +94,7 @@ describe('RedisTaskStore', () => {
 
   beforeEach(() => {
     mockRedis = createMockRedis();
-    store = new RedisTaskStore({ redis: mockRedis as unknown as import('ioredis').Redis });
+    store = new RedisTaskStore({ redis: mockRedis } as unknown as RedisTaskStoreOptions);
   });
 
   it('creates and gets a task', async () => {
@@ -271,9 +272,9 @@ describe('RedisTaskStore', () => {
 
   it('uses custom key prefix', async () => {
     const customStore = new RedisTaskStore({
-      redis: mockRedis as unknown as import('ioredis').Redis,
+      redis: mockRedis,
       keyPrefix: 'custom',
-    });
+    } as unknown as RedisTaskStoreOptions);
     await customStore.create({
       id: 'task-1',
       status: { state: 'submitted', timestamp: new Date().toISOString() },

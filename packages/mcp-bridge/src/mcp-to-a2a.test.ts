@@ -51,7 +51,7 @@ describe('McpToolAdapter', () => {
     });
 
     // Replace the internal client with our mock
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     const card = adapter.getAgentCard();
@@ -94,7 +94,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     const card = adapter.getAgentCard();
@@ -133,7 +133,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     const artifacts = await adapter.executeTask(
@@ -182,7 +182,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     await adapter.executeTask(
@@ -228,7 +228,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     await adapter.executeTask(
@@ -274,7 +274,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     const artifacts = await adapter.executeTask(
@@ -317,7 +317,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     await expect(
@@ -360,7 +360,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     await expect(
@@ -399,7 +399,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.disconnect();
     expect(mockClient.close).toHaveBeenCalled();
   });
@@ -428,7 +428,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     await expect(
@@ -466,7 +466,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     await expect(
@@ -503,7 +503,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     const artifacts = await adapter.executeTask(
@@ -540,7 +540,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     await adapter.executeTask(
@@ -574,7 +574,7 @@ describe('McpToolAdapter', () => {
       },
     });
 
-    (adapter as unknown as Record<string, unknown>).client = mockClient;
+    (adapter as unknown as { client: typeof mockClient }).client = mockClient;
     await adapter.initialize();
 
     await adapter.executeTask(

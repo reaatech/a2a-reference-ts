@@ -125,7 +125,9 @@ describe('createA2AHonoApp', () => {
       }),
     });
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { result: { tasks: unknown[]; totalSize: number } };
+    const body = (await res.json()) as {
+      result: { tasks: Array<{ id: string; status: { state: string } }>; totalSize: number };
+    };
     expect(body.result.tasks).toHaveLength(1);
     expect(body.result.totalSize).toBe(1);
   });
@@ -344,7 +346,9 @@ describe('createA2AHonoApp', () => {
       }),
     });
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { result: { tasks: unknown[]; totalSize: number } };
+    const body = (await res.json()) as {
+      result: { tasks: Array<{ id: string; status: { state: string } }>; totalSize: number };
+    };
     expect(body.result.tasks).toHaveLength(0);
     expect(body.result.totalSize).toBe(0);
   });
@@ -635,7 +639,9 @@ describe('createA2AHonoApp', () => {
         }),
       });
       expect(res.status).toBe(200);
-      const body = (await res.json()) as { result: { configs: unknown[] } };
+      const body = (await res.json()) as {
+        result: { configs: Array<{ taskId: string; url: string }> };
+      };
       expect(Array.isArray(body.result.configs)).toBe(true);
       expect(body.result.configs).toHaveLength(1);
     });

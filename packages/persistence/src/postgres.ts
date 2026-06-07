@@ -313,7 +313,7 @@ export class PostgresTaskStore implements TaskStore {
     historyLength?: number;
   }): Promise<{ tasks: Task[]; nextPageToken: string; totalSize: number }> {
     const conditions: string[] = [];
-    const params: unknown[] = [];
+    const params: (string | number)[] = [];
     let paramIndex = 1;
 
     if (options?.contextId) {

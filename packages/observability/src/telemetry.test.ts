@@ -101,7 +101,10 @@ describe('setTelemetryProvider', () => {
       startSpan() {
         return new NoopSpan();
       },
-      async startActiveSpan(_name: string, ...args: unknown[]) {
+      async startActiveSpan(
+        _name: string,
+        ...args: [Record<string, unknown> | TelemetrySpan, ...unknown[]]
+      ) {
         const fn = args.length === 2 ? args[1] : args[0];
         const result = await (fn as (span: TelemetrySpan) => Promise<unknown>)(new NoopSpan());
         return result;
@@ -147,7 +150,8 @@ describe('getTracer', () => {
   });
 
   it('passes name and version to provider', () => {
-    const spy = vi.fn<(...args: unknown[]) => ReturnType<TelemetryProvider['getTracer']>>();
+    const spy =
+      vi.fn<(...args: [string?, string?]) => ReturnType<TelemetryProvider['getTracer']>>();
     const provider: TelemetryProvider = {
       getTracer: spy,
       getMeter() {
@@ -183,14 +187,17 @@ describe('getMeter', () => {
   });
 
   it('passes name and version to provider', () => {
-    const spy = vi.fn<(...args: unknown[]) => ReturnType<TelemetryProvider['getMeter']>>();
+    const spy = vi.fn<(...args: [string?, string?]) => ReturnType<TelemetryProvider['getMeter']>>();
     const provider: TelemetryProvider = {
       getTracer() {
         return {
           startSpan() {
             return new NoopSpan();
           },
-          async startActiveSpan(_name: string, ...args: unknown[]) {
+          async startActiveSpan(
+            _name: string,
+            ...args: [Record<string, unknown> | TelemetrySpan, ...unknown[]]
+          ) {
             const fn = args.length === 2 ? args[1] : args[0];
             return (fn as (span: TelemetrySpan) => Promise<unknown>)(new NoopSpan());
           },
@@ -300,7 +307,11 @@ describe('withTaskSpan', () => {
 
   it('includes task attributes in the span options', async () => {
     const startActiveSpanSpy = vi.fn(
-      async (_name: string, _options: unknown, fn: (span: TelemetrySpan) => Promise<unknown>) => {
+      async (
+        _name: string,
+        _options: Record<string, unknown>,
+        fn: (span: TelemetrySpan) => Promise<unknown>,
+      ) => {
         return fn(new NoopSpan());
       },
     );

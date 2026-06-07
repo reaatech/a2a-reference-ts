@@ -1,3 +1,4 @@
+import type { Logger } from '@reaatech/a2a-reference-observability';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { RateLimiter } from './rate-limiter.js';
 
@@ -115,7 +116,10 @@ describe('RateLimiter', () => {
 
   it('uses array header values correctly in default keyFn', () => {
     const limiter = new RateLimiter({ windowMs: 60_000, maxRequests: 2 });
-    const req = { headers: { 'x-forwarded-for': ['10.0.0.1'] } } as any;
+    const req = { headers: { 'x-forwarded-for': ['10.0.0.1'] } } as {
+      ip?: string;
+      headers: Record<string, string | string[] | undefined>;
+    };
 
     // Default keyFn uses req.ip, not x-forwarded-for, so ip is undefined
     const r1 = limiter.check(req);
@@ -136,7 +140,7 @@ describe('RateLimiter', () => {
         fatal: vi.fn(),
         trace: vi.fn(),
         silent: vi.fn(),
-      } as any,
+      } as unknown as Logger,
     });
     const req = { ip: '10.0.0.1', headers: {} };
 
